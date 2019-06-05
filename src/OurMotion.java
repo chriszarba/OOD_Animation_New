@@ -98,4 +98,5 @@ public class OurMotion implements IMotion {
     return new Color(this.finalColor.getRed(), this.finalColor.getGreen(),
         this.finalColor.getBlue(), this.finalColor.getAlpha());
   }
+
 }
