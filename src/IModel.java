@@ -17,4 +17,5 @@ public interface IModel {
   void changeColorShape(String name, int t0, int t1, Color newColor);
   List<IShape> getShapes();
    */
+
 }
