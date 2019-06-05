@@ -3,12 +3,12 @@ import java.awt.geom.Point2D;
 
 public interface IModel {
 
-  void addShape(String name, ShapeType type, Point2D pos, int width, int height, Color color);
+  boolean addShape(String name, ShapeType type, Point2D pos, int width, int height, Color color);
 
-  void removeShape(String name);
+  boolean removeShape(String name);
 
-  void addMotion(String name, int t0, int t1, Point2D startPos, Point2D endPos, int startWidth,
-      int startLength, int endWidth, int endLength, Color startColor, Color endColor);
+  boolean addMotion(String name, int t0, int t1, Point2D startPos, Point2D endPos, int startWidth,
+      int startHeight, int endWidth, int endHeight, Color startColor, Color endColor);
 
   /*
   void moveShape(String name, int t0, int t1, int x1, int y1);
