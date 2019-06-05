@@ -1,11 +1,18 @@
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class OurModel implements IModel {
   Map<String, IShape> shapesMap;
   Map<String, List<IMotion>> motionsMap;
+
+  public OurModel() {
+    shapesMap = new HashMap<>();
+    motionsMap = new HashMap<>();
+  }
 
   @Override
   public boolean addShape(String name, ShapeType type, Point2D pos, int width, int height,
@@ -54,6 +61,11 @@ public class OurModel implements IModel {
   }
 
   protected void addToMotionMap(String name, IMotion motion){
+    // if there is no entry for this name, add one
+    if(!this.motionsMap.containsKey(name)){
+      this.motionsMap.put(name, new ArrayList<>());
+    }
+
     // insertion sort
     int index = 0;
     for(; index < this.motionsMap.get(name).size(); ++index){
