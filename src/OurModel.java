@@ -31,6 +31,9 @@ public class OurModel implements IModel {
         return false;
     }
 
+    if(this.shapesMap.containsKey(name)){
+      return false;
+    }
     this.shapesMap.put(name, shape);
     return true;
   }
