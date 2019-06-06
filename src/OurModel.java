@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 public class OurModel implements IModel {
-  Map<String, IShape> shapesMap;
-  Map<String, List<IMotion>> motionsMap;
+
+  protected Map<String, IShape> shapesMap;
+  protected Map<String, List<IMotion>> motionsMap;
 
   public OurModel() {
     shapesMap = new HashMap<>();
@@ -17,12 +18,13 @@ public class OurModel implements IModel {
   @Override
   public boolean addShape(String name, ShapeType type, Point2D pos, int width, int height,
       Color color) {
-    if(name == null || type == null || pos == null || pos.getX() < 0 || pos.getY() < 0 || width < 0 || height < 0){
+    if (name == null || type == null || pos == null || pos.getX() < 0 || pos.getY() < 0 || width < 0
+        || height < 0) {
       return false;
     }
 
     IShape shape;
-    switch(type){
+    switch (type) {
       case RECTANGLE:
         break;
       case OVAL:
@@ -37,7 +39,7 @@ public class OurModel implements IModel {
 
   @Override
   public boolean removeShape(String name) {
-    if(shapesMap.containsKey(name)){
+    if (shapesMap.containsKey(name)) {
       shapesMap.remove(name);
       motionsMap.remove(name);
       return true;
@@ -49,38 +51,52 @@ public class OurModel implements IModel {
   public boolean addMotion(String name, int t0, int t1, Point2D startPos, Point2D endPos,
       int startWidth, int startHeight, int endWidth, int endHeight, Color startColor,
       Color endColor) {
-    try{
-      IMotion motion = new OurMotion(t0, t1, startPos, endPos, startWidth, startHeight, endWidth, endHeight, startColor, endColor);
-      this.addToMotionMap(name, motion);
-      return true;
-    }catch(IllegalArgumentException e){
+    try {
+      IMotion motion = new OurMotion(t0, t1, startPos, endPos, startWidth, startHeight, endWidth,
+          endHeight, startColor, endColor);
+      return this.addToMotionMap(name, motion);
+    } catch (IllegalArgumentException e) {
       return false;
     }
   }
 
-  protected void addToMotionMap(String name, IMotion motion){
+  protected boolean addToMotionMap(String name, IMotion motion) {
     // if there is no entry for this name, add one
-    if(!this.motionsMap.containsKey(name)){
+    if (!this.motionsMap.containsKey(name)) {
       this.motionsMap.put(name, new ArrayList<>());
     }
 
     // insertion sort
+    boolean insert = false;
     int index = 0;
-    for(; index < this.motionsMap.get(name).size(); ++index){
-      if(motion.getStartTick() < this.motionsMap.get(name).get(index).getStartTick()){
+    for (; index < this.motionsMap.get(name).size(); ++index) {
+      if ((this.motionsMap.get(name).get(index).getStartTick() <= motion.getStartTick() &&
+          this.motionsMap.get(name).get(index).getEndTick() >= motion.getStartTick()) ||
+          (this.motionsMap.get(name).get(index).getStartTick() <= motion.getEndTick() &&
+              this.motionsMap.get(name).get(index).getEndTick() >= motion.getEndTick())) {
+        // overlap
+        return false;
+      } else if (motion.getStartTick() < this.motionsMap.get(name).get(index).getStartTick()) {
+        insert = true;
         break;
       }
     }
 
-    this.motionsMap.get(name).add(index, motion);
+    if (insert) {
+      this.motionsMap.get(name).add(index, motion);
+    } else {
+      this.motionsMap.get(name).add(motion);
+    }
+    return true;
   }
 
-  protected IShape computeShapeAtTick(String id, int tick) {}
+  protected IShape computeShapeAtTick(String id, int tick) {
+  }
 
 
   @Override
-  public List<IShape> getShapesAtTick(int tick) {
-    List<IShape> list = new ArrayList<>();
+  public List<IShape> animate(int tick) {
+    return new ArrayList<>();
   }
 
   @Override
@@ -91,15 +107,16 @@ public class OurModel implements IModel {
   @Override
   public String getDescription() {
     StringBuilder builder = new StringBuilder();
-    for(Map.Entry<String, IShape> entry : this.shapesMap.entrySet()){
+    for (Map.Entry<String, IShape> entry : this.shapesMap.entrySet()) {
       builder.append("shape ");
       builder.append(entry.getKey());
       builder.append(" ");
       builder.append(this.getTypeString());
       builder.append("\n");
-      for(IMotion motion : this.motionsMap.get(entry.getKey())){
+      for (IMotion motion : this.motionsMap.get(entry.getKey())) {
         builder.append("motion ");
         builder.append(entry.getKey());
+
         builder.append(motion.getStartTick());
         builder.append(" ");
         builder.append(motion.getInitialPos().getX());
@@ -115,7 +132,9 @@ public class OurModel implements IModel {
         builder.append(motion.getInitialColor().getGreen());
         builder.append(" ");
         builder.append(motion.getInitialColor().getBlue());
+
         builder.append("  ");
+
         builder.append(motion.getEndTick());
         builder.append(" ");
         builder.append(motion.getFinalPos().getX());
@@ -139,8 +158,8 @@ public class OurModel implements IModel {
     return builder.toString();
   }
 
-  protected String getTypeString(ShapeType type){
-    switch (type){
+  protected String getTypeString(ShapeType type) {
+    switch (type) {
       case OVAL:
         return "Oval";
       case RECTANGLE:
