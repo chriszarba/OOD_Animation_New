@@ -9,6 +9,16 @@ import java.util.List;
 public interface IReadOnlyModel {
 
   /**
+   * Returns a list of read-only shapes at a given tick. The shapes have the correct
+   * color, dimensions, and position for the given tick.
+   *
+   * @param tick - the tick to get the shapes at.
+   * @return The list of shapes in the correct position, with the correct dimensions, and
+   * the correct color for the given tick.
+   */
+  List<IReadOnlyShape> animate(int tick);
+
+  /**
    * Get the list of names associated with shapes in the model currently.
    *
    * @return A list of the names associaated with shapes in the mdoel.

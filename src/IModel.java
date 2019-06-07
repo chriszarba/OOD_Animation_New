@@ -20,7 +20,7 @@ public interface IModel extends IReadOnlyModel {
    * @param color - the color of the shape
    * @return true if the shape was sucessfully added to the model, false otherwise.
    */
-  boolean addShape(String name, ShapeType type, Point2D pos, int width, int height, Color color);
+  boolean addShape(String name, ShapeType type, Point2D pos, double width, double height, Color color);
 
   /**
    * Removes the shape and all of its associated motions from the model.
@@ -48,6 +48,6 @@ public interface IModel extends IReadOnlyModel {
    * @return true if the motion was sucessfully added and associated with a shape,
    * false otherwise.
    */
-  boolean addMotion(String name, int t0, int t1, Point2D startPos, Point2D endPos, int startWidth,
-      int startHeight, int endWidth, int endHeight, Color startColor, Color endColor);
+  boolean addMotion(String name, int t0, int t1, Point2D startPos, Point2D endPos, double startWidth,
+      double startHeight, double endWidth, double endHeight, Color startColor, Color endColor);
 }
