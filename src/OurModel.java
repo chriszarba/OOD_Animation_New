@@ -23,18 +23,19 @@ public class OurModel implements IModel {
   }
 
   @Override
-  public boolean addShape(String name, ShapeType type, Point2D pos, int width, int height,
-      Color color) {
-    if (name == null || type == null || pos == null || pos.getX() < 0 || pos.getY() < 0 || width < 0
-        || height < 0) {
+  public boolean addShape(String name, ShapeType type, Point2D pos, double width, double height,
+                          Color color) {
+    if(name == null || type == null || pos == null || pos.getX() < 0 || pos.getY() < 0 || width < 0 || height < 0){
       return false;
     }
 
     IShape shape;
     switch (type) {
       case RECTANGLE:
+        shape = new Rectangle(pos, color, width, height, true);
         break;
       case OVAL:
+        shape = new Ellipse(pos, color, width, height, true);
         break;
       default:
         return false;
@@ -109,7 +110,6 @@ public class OurModel implements IModel {
     return true;
   }
 
-
   @Override
   public List<IShape> animate(int tick) {
     return new ArrayList<>();
@@ -127,7 +127,7 @@ public class OurModel implements IModel {
       builder.append("shape ");
       builder.append(entry.getKey());
       builder.append(" ");
-      builder.append(this.getTypeString());
+      builder.append(this.getTypeString(entry.getValue().getShapeType()));
       builder.append("\n");
       for (IMotion motion : this.motionsMap.get(entry.getKey())) {
         builder.append("motion ");

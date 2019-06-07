@@ -6,11 +6,10 @@ import java.awt.geom.Point2D;
  * tick. They have the starting and ending positions, dimensions, and color for the shape.
  */
 public interface IMotion {
-
+  
   /**
-   * Get the tick this motion starts at.
-   *
-   * @return the tick this motion starts at.
+   * Gets the starting tick of the motion.
+   * @return the motion object's starting tick.
    */
   int getStartTick();
 
@@ -38,44 +37,45 @@ public interface IMotion {
   Point2D getFinalPos();
 
   /**
-   * Get the starting width of the shape associated with this motion.
+
+   * Gets the initial width of the shape being acted upon by the motion.
    *
-   * @return the starting width of the shape associated with this motion.
+   * @return the motion object's initial width field.
    */
-  int getInitialWidth();
+  double getInitialWidth();
 
   /**
-   * Get the ending width of the shape associated with this motion.
+   * Gets the final width of the shape being acted upon by the motion.
    *
-   * @return the ending width of the shape associated with this motion.
+   * @return the motion object's final width field.
    */
-  int getFinalWidth();
+  double getFinalWidth();
 
   /**
-   * Get the starting height of the shape associated with this motion.
+   * Gets the initial height of the shape being acted upon by the motion.
    *
-   * @return the starting height of the shape associated with this motion.
+   * @return the motion object's initial height field.
    */
-  int getInitialHeight();
+  double getInitialHeight();
 
   /**
-   * Get the ending height of the shape associated with this motion.
+   * Gets the final height of the shape being acted upon by the motion.
    *
-   * @return the ending height of the shape associated with this motion.
+   * @return the motion object's final height field.
    */
-  int getFinalHeight();
+  double getFinalHeight();
 
   /**
-   * Get the starting color of the shape associated with this motion.
+   * Gets the initial color of the shape being acted upon by the motion.
    *
-   * @return the starting color of the shape associated with this motion.
+   * @return the motion object's initial color field.
    */
   Color getInitialColor();
 
   /**
-   * Get the ending color of the shape associated with this motion.
+   * Gets the final color of the shape being acted upon by the motion.
    *
-   * @return the ending color of the shape associated with this motion.
+   * @return the motion object's final color field.
    */
   Color getFinalColor();
 }

@@ -18,6 +18,14 @@ public class AbstractShape implements IShape {
     this.visible = visible;
   }
 
+  protected AbstractShape(Point2D pos, Color color, double width, double height, boolean visible){
+    this.position = pos;
+    this.color = color;
+    this.width = width;
+    this.height = height;
+    this.visible = visible;
+  }
+
   @Override
   public void setX(double x) {
     this.position.setLocation(x, this.position.getY());

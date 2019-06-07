@@ -9,15 +9,6 @@ import java.util.List;
 public interface IReadOnlyModel {
 
   /**
-   * Calculates the correct position, dimensions, and color of all shapes at the given tick.
-   *
-   * @param tick - the tick to get the positions of the shapes at.
-   * @return A list of {@link IShape} that represents all the shapes at the given tick,
-   * each with the appropriate dimensions, position, and color.
-   */
-  List<IShape> animate(int tick);
-
-  /**
    * Get the list of names associated with shapes in the model currently.
    *
    * @return A list of the names associaated with shapes in the mdoel.
