@@ -27,7 +27,7 @@ public interface IModel extends IReadOnlyModel {
    *
    * @param name - the name associated with the shape to remove.
    * @return true if the shape was sucessfully removed, false otherwise (such as if it didn't
-   * exist).
+   *     exist).
    */
   boolean removeShape(String name);
 

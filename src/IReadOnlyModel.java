@@ -13,7 +13,7 @@ public interface IReadOnlyModel {
    *
    * @param tick - the tick to get the shapes at.
    * @return The list of shapes in the correct position, with the correct dimensions, and the
-   * correct color for the given tick.
+   *     correct color for the given tick.
    */
   List<IReadOnlyShape> animate(int tick);
 

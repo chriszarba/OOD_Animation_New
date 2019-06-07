@@ -31,7 +31,8 @@ public class OurMotion implements IMotion {
    * @param initialColor - the initial color of the associated shape.
    * @param finalColor - the ending color of the associated shape.
    * @throws IllegalArgumentException If either the ending tick is the same as or before the
-   * starting tick, if any of the dimensions are negative, or if any of the positions are negative.
+   *     starting tick, if any of the dimensions are negative, or if any of the positions are
+   *     negative.
    */
   public OurMotion(int startTick, int endTick, Point2D initialPos, Point2D finalPos,
       double initialWidth, double initialHeight, double finalWidth, double finalHeight,

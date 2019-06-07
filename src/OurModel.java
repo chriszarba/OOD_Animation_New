@@ -95,10 +95,10 @@ public class OurModel implements IModel {
     boolean insert = false;
     int index = 0;
     for (; index < this.motionsMap.get(name).size(); ++index) {
-      if ((this.motionsMap.get(name).get(index).getStartTick() <= motion.getStartTick() &&
-          this.motionsMap.get(name).get(index).getEndTick() > motion.getStartTick()) ||
-          (this.motionsMap.get(name).get(index).getStartTick() < motion.getEndTick() &&
-              this.motionsMap.get(name).get(index).getEndTick() >= motion.getEndTick())) {
+      if ((this.motionsMap.get(name).get(index).getStartTick() <= motion.getStartTick()
+          && this.motionsMap.get(name).get(index).getEndTick() > motion.getStartTick())
+          || (this.motionsMap.get(name).get(index).getStartTick() < motion.getEndTick()
+          && this.motionsMap.get(name).get(index).getEndTick() >= motion.getEndTick())) {
         // overlap
         return false;
       } else if (motion.getStartTick() < this.motionsMap.get(name).get(index).getStartTick()) {
