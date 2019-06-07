@@ -24,8 +24,9 @@ public class OurModel implements IModel {
 
   @Override
   public boolean addShape(String name, ShapeType type, Point2D pos, double width, double height,
-                          Color color) {
-    if(name == null || type == null || pos == null || color == null || pos.getX() < 0 || pos.getY() < 0 || width < 0 || height < 0){
+      Color color) {
+    if (name == null || type == null || pos == null || color == null || pos.getX() < 0
+        || pos.getY() < 0 || width < 0 || height < 0) {
       return false;
     }
 
@@ -34,7 +35,7 @@ public class OurModel implements IModel {
       case RECTANGLE:
         shape = new Rectangle(pos, color, width, height, true);
         break;
-      case OVAL:
+      case ELLIPSE:
         shape = new Ellipse(pos, color, width, height, true);
         break;
       default:
@@ -62,7 +63,7 @@ public class OurModel implements IModel {
   public boolean addMotion(String name, int t0, int t1, Point2D startPos, Point2D endPos,
       double startWidth, double startHeight, double endWidth, double endHeight, Color startColor,
       Color endColor) {
-    if(!this.shapesMap.containsKey(name)){
+    if (!this.shapesMap.containsKey(name)) {
       return false;
     }
 
@@ -101,11 +102,14 @@ public class OurModel implements IModel {
         // overlap
         return false;
       } else if (motion.getStartTick() < this.motionsMap.get(name).get(index).getStartTick()) {
-        if(index - 1 >= 0 && this.motionsMap.get(name).get(index-1).getEndTick() == motion.getStartTick()){
+        if (index - 1 >= 0 && this.motionsMap.get(name).get(index - 1).getEndTick() == motion
+            .getStartTick()) {
           // ensure if the endTick is the same as this startTick the parameters are the same
-          IMotion otherMotion = this.motionsMap.get(name).get(index-1);
-          if(!motion.getInitialPos().equals(otherMotion.getFinalPos()) || motion.getInitialWidth() != otherMotion.getFinalWidth()
-          || motion.getInitialHeight() != otherMotion.getFinalHeight() || !motion.getInitialColor().equals(otherMotion.getFinalColor())){
+          IMotion otherMotion = this.motionsMap.get(name).get(index - 1);
+          if (!motion.getInitialPos().equals(otherMotion.getFinalPos())
+              || motion.getInitialWidth() != otherMotion.getFinalWidth()
+              || motion.getInitialHeight() != otherMotion.getFinalHeight() || !motion
+              .getInitialColor().equals(otherMotion.getFinalColor())) {
             return false;
           }
         }
@@ -145,11 +149,12 @@ public class OurModel implements IModel {
         builder.append("motion ");
         builder.append(entry.getKey());
 
-        builder.append(String.format(" %-3d %-3.0f %-3.0f %-3.0f %-3.0f %-3d %-3d %-3d", motion.getStartTick(),
-            motion.getInitialPos().getX(),
-            motion.getInitialPos().getY(), motion.getInitialWidth(), motion.getInitialHeight(),
-            motion.getInitialColor().getRed(),
-            motion.getInitialColor().getGreen(), motion.getInitialColor().getBlue()));
+        builder.append(
+            String.format(" %-3d %-3.0f %-3.0f %-3.0f %-3.0f %-3d %-3d %-3d", motion.getStartTick(),
+                motion.getInitialPos().getX(),
+                motion.getInitialPos().getY(), motion.getInitialWidth(), motion.getInitialHeight(),
+                motion.getInitialColor().getRed(),
+                motion.getInitialColor().getGreen(), motion.getInitialColor().getBlue()));
 
         /*
         builder.append(motion.getStartTick());
@@ -171,11 +176,12 @@ public class OurModel implements IModel {
 
         builder.append("   ");
 
-        builder.append(String.format(" %-3d %-3.0f %-3.0f %-3.0f %-3.0f %-3d %-3d %d", motion.getEndTick(),
-            motion.getFinalPos().getX(),
-            motion.getFinalPos().getY(), motion.getFinalWidth(), motion.getFinalHeight(),
-            motion.getFinalColor().getRed(),
-            motion.getFinalColor().getGreen(), motion.getFinalColor().getBlue()));
+        builder.append(
+            String.format(" %-3d %-3.0f %-3.0f %-3.0f %-3.0f %-3d %-3d %d", motion.getEndTick(),
+                motion.getFinalPos().getX(),
+                motion.getFinalPos().getY(), motion.getFinalWidth(), motion.getFinalHeight(),
+                motion.getFinalColor().getRed(),
+                motion.getFinalColor().getGreen(), motion.getFinalColor().getBlue()));
 
         /*
         builder.append(motion.getEndTick());
@@ -199,7 +205,7 @@ public class OurModel implements IModel {
       builder.append("\n\n");
     }
     // remove last newlines
-    builder.delete(builder.length()-3, builder.length());
+    builder.delete(builder.length() - 3, builder.length());
 
     return builder.toString();
   }
@@ -212,7 +218,7 @@ public class OurModel implements IModel {
    */
   protected String getTypeString(ShapeType type) {
     switch (type) {
-      case OVAL:
+      case ELLIPSE:
         return "ellipse";
       case RECTANGLE:
         return "rectangle";

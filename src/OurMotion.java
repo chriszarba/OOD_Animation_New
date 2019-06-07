@@ -30,12 +30,12 @@ public class OurMotion implements IMotion {
    * @param finalHeight - the ending height of the associated shape.
    * @param initialColor - the initial color of the associated shape.
    * @param finalColor - the ending color of the associated shape.
-   * @throws IllegalArgumentException If either the ending tick is the same as
-   * or before the starting tick, if any of the dimensions are negative, or if
-   * any of the positions are negative.
+   * @throws IllegalArgumentException If either the ending tick is the same as or before the
+   * starting tick, if any of the dimensions are negative, or if any of the positions are negative.
    */
   public OurMotion(int startTick, int endTick, Point2D initialPos, Point2D finalPos,
-      double initialWidth, double initialHeight, double finalWidth, double finalHeight, Color initialColor,
+      double initialWidth, double initialHeight, double finalWidth, double finalHeight,
+      Color initialColor,
       Color finalColor) throws IllegalArgumentException {
     if (startTick < 0 || endTick <= startTick) {
       throw new IllegalArgumentException("invalid time range");
@@ -43,11 +43,12 @@ public class OurMotion implements IMotion {
     if (initialWidth < 0 || initialHeight < 0 || finalWidth < 0 || finalHeight < 0) {
       throw new IllegalArgumentException("invalid dimension");
     }
-    if (initialPos == null || finalPos == null | initialPos.getX() < 0 || initialPos.getY() < 0 || finalPos.getX() < 0
+    if (initialPos == null || finalPos == null | initialPos.getX() < 0 || initialPos.getY() < 0
+        || finalPos.getX() < 0
         || finalPos.getY() < 0) {
       throw new IllegalArgumentException("invalid position");
     }
-    if(initialColor == null || finalColor == null){
+    if (initialColor == null || finalColor == null) {
       throw new IllegalArgumentException("null color");
     }
 

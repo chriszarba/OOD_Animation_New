@@ -6,9 +6,10 @@ import java.awt.geom.Point2D;
  * tick. They have the starting and ending positions, dimensions, and color for the shape.
  */
 public interface IMotion {
-  
+
   /**
    * Gets the starting tick of the motion.
+   *
    * @return the motion object's starting tick.
    */
   int getStartTick();
@@ -37,7 +38,6 @@ public interface IMotion {
   Point2D getFinalPos();
 
   /**
-
    * Gets the initial width of the shape being acted upon by the motion.
    *
    * @return the motion object's initial width field.
