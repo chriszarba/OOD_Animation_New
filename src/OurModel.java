@@ -15,8 +15,8 @@ public class OurModel implements IModel {
   }
 
   @Override
-  public boolean addShape(String name, ShapeType type, Point2D pos, int width, int height,
-      Color color) {
+  public boolean addShape(String name, ShapeType type, Point2D pos, double width, double height,
+                          Color color) {
     if(name == null || type == null || pos == null || pos.getX() < 0 || pos.getY() < 0 || width < 0 || height < 0){
       return false;
     }
@@ -24,13 +24,18 @@ public class OurModel implements IModel {
     IShape shape;
     switch(type){
       case RECTANGLE:
+        shape = new Rectangle(pos, color, width, height, true);
         break;
       case OVAL:
+        shape = new Ellipse(pos, color, width, height, true);
         break;
       default:
         return false;
     }
 
+    if(this.shapesMap.containsKey(name)){
+      return false;
+    }
     this.shapesMap.put(name, shape);
     return true;
   }
@@ -47,8 +52,8 @@ public class OurModel implements IModel {
 
   @Override
   public boolean addMotion(String name, int t0, int t1, Point2D startPos, Point2D endPos,
-      int startWidth, int startHeight, int endWidth, int endHeight, Color startColor,
-      Color endColor) {
+                           int startWidth, int startHeight, int endWidth, int endHeight, Color startColor,
+                           Color endColor) {
     try{
       IMotion motion = new OurMotion(t0, t1, startPos, endPos, startWidth, startHeight, endWidth, endHeight, startColor, endColor);
       this.addToMotionMap(name, motion);
@@ -75,12 +80,12 @@ public class OurModel implements IModel {
     this.motionsMap.get(name).add(index, motion);
   }
 
-  protected IShape computeShapeAtTick(String id, int tick) {}
+  protected IReadOnlyShape computeShapeAtTick(String id, int tick) {}
 
 
   @Override
-  public List<IShape> getShapesAtTick(int tick) {
-    List<IShape> list = new ArrayList<>();
+  public List<IReadOnlyShape> getShapesAtTick(int tick) {
+    List<IReadOnlyShape> list = new ArrayList<>();
   }
 
   @Override
@@ -95,7 +100,7 @@ public class OurModel implements IModel {
       builder.append("shape ");
       builder.append(entry.getKey());
       builder.append(" ");
-      builder.append(this.getTypeString());
+      builder.append(this.getTypeString(entry.getValue().getShapeType()));
       builder.append("\n");
       for(IMotion motion : this.motionsMap.get(entry.getKey())){
         builder.append("motion ");

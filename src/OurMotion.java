@@ -8,15 +8,16 @@ public class OurMotion implements IMotion {
   private final int endTick;
   private final Point2D initialPos;
   private final Point2D finalPos;
-  private final int initialWidth;
-  private final int initialHeight;
-  private final int finalWidth;
-  private final int finalHeight;
+  private final double initialWidth;
+  private final double initialHeight;
+  private final double finalWidth;
+  private final double finalHeight;
   private final Color initialColor;
   private final Color finalColor;
 
+
   public OurMotion(int startTick, int endTick, Point2D initialPos, Point2D finalPos,
-      int initialWidth, int initialHeight, int finalWidth, int finalHeight, Color initialColor,
+      double initialWidth, double initialHeight, double finalWidth, double finalHeight, Color initialColor,
       Color finalColor) throws IllegalArgumentException {
     if (startTick < 0 || endTick <= startTick) {
       throw new IllegalArgumentException("invalid time range");
@@ -68,22 +69,22 @@ public class OurMotion implements IMotion {
   }
 
   @Override
-  public int getInitialWidth() {
+  public double getInitialWidth() {
     return this.initialWidth;
   }
 
   @Override
-  public int getFinalWidth() {
+  public double getFinalWidth() {
     return this.finalWidth;
   }
 
   @Override
-  public int getInitialHeight() {
+  public double getInitialHeight() {
     return this.initialHeight;
   }
 
   @Override
-  public int getFinalHeight() {
+  public double getFinalHeight() {
     return this.finalHeight;
   }
 
