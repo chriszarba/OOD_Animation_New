@@ -5,11 +5,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * An implementation of {@link IModel}. Stores the shapes and motions for the animation, is the
+ * model of the model-view-controller design scheme.
+ */
 public class OurModel implements IModel {
 
   protected Map<String, IShape> shapesMap;
   protected Map<String, List<IMotion>> motionsMap;
 
+  /**
+   * Constructs a new model.
+   */
   public OurModel() {
     shapesMap = new HashMap<>();
     motionsMap = new HashMap<>();
@@ -33,7 +40,7 @@ public class OurModel implements IModel {
         return false;
     }
 
-    if(this.shapesMap.containsKey(name)){
+    if (this.shapesMap.containsKey(name)) {
       return false;
     }
     this.shapesMap.put(name, shape);
@@ -63,6 +70,15 @@ public class OurModel implements IModel {
     }
   }
 
+  /**
+   * Adds the motion to the motion map, ensuring it does not overlap with any of the other motions
+   * associated with the same shape. Keeps the lists of motions associated with each shape sorted
+   * from lowest to highest by starting tick.
+   *
+   * @param name - the name of the shape the motion is associated with
+   * @param motion - the motion to add to the map.
+   * @return true if the motion is successfully added to the map, false otherwise.
+   */
   protected boolean addToMotionMap(String name, IMotion motion) {
     // if there is no entry for this name, add one
     if (!this.motionsMap.containsKey(name)) {
@@ -93,9 +109,6 @@ public class OurModel implements IModel {
     return true;
   }
 
-  protected IShape computeShapeAtTick(String id, int tick) {
-  }
-
 
   @Override
   public List<IShape> animate(int tick) {
@@ -120,6 +133,13 @@ public class OurModel implements IModel {
         builder.append("motion ");
         builder.append(entry.getKey());
 
+        builder.append(String.format(" %f0 %f0 %f0 %f0 %f0 %i %i %i", motion.getStartTick(),
+            motion.getInitialPos().getX(),
+            motion.getInitialPos().getY(), motion.getInitialWidth(), motion.getInitialHeight(),
+            motion.getInitialColor().getRed(),
+            motion.getInitialColor().getGreen(), motion.getInitialColor().getBlue()));
+
+        /*
         builder.append(motion.getStartTick());
         builder.append(" ");
         builder.append(motion.getInitialPos().getX());
@@ -135,9 +155,17 @@ public class OurModel implements IModel {
         builder.append(motion.getInitialColor().getGreen());
         builder.append(" ");
         builder.append(motion.getInitialColor().getBlue());
+         */
 
-        builder.append("  ");
+        builder.append(" ");
 
+        builder.append(String.format(" %f0 %f0 %f0 %f0 %f0 %i %i %i", motion.getEndTick(),
+            motion.getFinalPos().getX(),
+            motion.getFinalPos().getY(), motion.getFinalWidth(), motion.getFinalHeight(),
+            motion.getFinalColor().getRed(),
+            motion.getFinalColor().getGreen(), motion.getFinalColor().getBlue()));
+
+        /*
         builder.append(motion.getEndTick());
         builder.append(" ");
         builder.append(motion.getFinalPos().getX());
@@ -154,6 +182,7 @@ public class OurModel implements IModel {
         builder.append(" ");
         builder.append(motion.getFinalColor().getBlue());
         builder.append("\n");
+         */
       }
       builder.append("\n\n");
     }
@@ -161,6 +190,12 @@ public class OurModel implements IModel {
     return builder.toString();
   }
 
+  /**
+   * Helper function to get the String value of the enum associated with a shape.
+   *
+   * @param type - the type of shape to get the String representation for.
+   * @return the String representation of the given type.
+   */
   protected String getTypeString(ShapeType type) {
     switch (type) {
       case OVAL:

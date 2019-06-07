@@ -1,7 +1,9 @@
 import java.awt.Color;
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
 
+/**
+ * An implementation of {@link IMotion}.
+ */
 public class OurMotion implements IMotion {
 
   private final int startTick;
@@ -15,6 +17,23 @@ public class OurMotion implements IMotion {
   private final Color initialColor;
   private final Color finalColor;
 
+  /**
+   * Constructs a new OurMotion.
+   *
+   * @param startTick - the starting tick of the motion.
+   * @param endTick - the ending tick of the motion.
+   * @param initialPos - the starting position of the associated shape.
+   * @param finalPos - the ending position of the associated shape.
+   * @param initialWidth - the starting width of the associated shape.
+   * @param initialHeight - the starting height of the associated shape.
+   * @param finalWidth - the ending width of the associated shape.
+   * @param finalHeight - the ending height of the associated shape.
+   * @param initialColor - the initial color of the associated shape.
+   * @param finalColor - the ending color of the associated shape.
+   * @throws IllegalArgumentException If either the ending tick is the same as
+   * or before the starting tick, if any of the dimensions are negative, or if
+   * any of the positions are negative.
+   */
   public OurMotion(int startTick, int endTick, Point2D initialPos, Point2D finalPos,
       int initialWidth, int initialHeight, int finalWidth, int finalHeight, Color initialColor,
       Color finalColor) throws IllegalArgumentException {
