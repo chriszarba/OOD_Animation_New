@@ -1,6 +1,9 @@
 import java.awt.*;
 import java.awt.geom.Point2D;
 
+/**
+ * Class to represent a shape that is a rectangle.
+ */
 public class Rectangle extends AbstractShape {
 
   /**
