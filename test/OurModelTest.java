@@ -1,6 +1,9 @@
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import cs3500.animator.model.IModel;
+import cs3500.animator.model.OurModel;
+import cs3500.animator.model.ShapeType;
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;

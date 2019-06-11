@@ -1,11 +1,14 @@
+package cs3500.animator.model;
+
 import java.awt.Color;
 import java.awt.geom.Point2D;
 
 /**
  * Abstract class to represent a shape.
  */
-public class AbstractShape implements IShape {
+public abstract class AbstractShape implements IShape {
 
+  private String name;
   private Point2D position;
   private Color color;
   private double width;
@@ -13,11 +16,12 @@ public class AbstractShape implements IShape {
   private boolean visible;
 
 
-  protected AbstractShape(double x, double y, Color color, double width, double height,
+  protected AbstractShape(String name, double x, double y, Color color, double width, double height,
       boolean visible) {
-    if (x < 0 || y < 0 || width < 0 || height < 0 || color == null) {
+    if (x < 0 || y < 0 || width < 0 || height < 0 || color == null || name == null) {
       throw new IllegalArgumentException("Invalid argument(s) to create shape.");
     }
+    this.name = name;
     this.position = new Point2D.Double(x, y);
     this.color = color;
     this.width = width;
@@ -25,11 +29,12 @@ public class AbstractShape implements IShape {
     this.visible = visible;
   }
 
-  protected AbstractShape(Point2D pos, Color color, double width, double height, boolean visible) {
+  protected AbstractShape(String name, Point2D pos, Color color, double width, double height, boolean visible) {
     if (pos == null || pos.getX() < 0 || pos.getY() < 0 || width < 0 || height < 0
-        || color == null) {
+        || color == null || name == null) {
       throw new IllegalArgumentException("Invalid argument(s) to create shape.");
     }
+    this.name = name;
     this.position = pos;
     this.color = color;
     this.width = width;
@@ -118,7 +123,8 @@ public class AbstractShape implements IShape {
   }
 
   @Override
-  public ShapeType getShapeType() {
-    return null;
-  }
+  public abstract ShapeType getShapeType();
+
+  @Override
+  public String getName() { return this.name; }
 }

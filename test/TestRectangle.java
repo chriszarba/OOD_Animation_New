@@ -1,3 +1,6 @@
+import cs3500.animator.model.IShape;
+import cs3500.animator.model.Rectangle;
+import cs3500.animator.model.ShapeType;
 import org.junit.Test;
 
 import java.awt.Color;
@@ -6,7 +9,7 @@ import java.awt.geom.Point2D;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Class to test public methods of the Rectangle class.
+ * Class to test public methods of the cs3500.animator.model.Rectangle class.
  */
 public class TestRectangle {
 
