@@ -1,8 +1,8 @@
-import java.awt.*;
+import java.awt.Color;
 
 /**
- * Interface to represent a shape which can only be read; its fields cannot be changed through
- * this interface.
+ * Interface to represent a shape which can only be read; its fields cannot be changed through this
+ * interface.
  */
 public interface IReadOnlyShape {
 

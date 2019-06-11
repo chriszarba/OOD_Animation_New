@@ -1,6 +1,6 @@
 import org.junit.Test;
 
-import java.awt.*;
+import java.awt.Color;
 import java.awt.geom.Point2D;
 
 import static org.junit.Assert.assertEquals;
@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
  * Class to test public methods of the Rectangle class.
  */
 public class TestRectangle {
+
   IShape rect1 = new Rectangle(0, 0, Color.BLACK, 0, 0, true);
   IShape rect2 = new Rectangle(1, 1, Color.BLUE, 1, 1, false);
 
