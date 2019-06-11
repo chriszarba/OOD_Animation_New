@@ -158,45 +158,4 @@ public class OurModel implements IModel {
     return copy;
   }
 
-  /*
-  @Override
-  public String getDescription() {
-    StringBuilder builder = new StringBuilder();
-    for (Map.Entry<String, IShape> entry : this.shapesMap.entrySet()) {
-      builder.append("shape ");
-      builder.append(entry.getKey());
-      builder.append(" ");
-      builder.append(this.getTypeString(entry.getValue().getShapeType()));
-      builder.append("\n");
-      for (IMotion motion : this.motionsMap.get(entry.getKey())) {
-        builder.append("motion ");
-        builder.append(entry.getKey());
-
-        builder.append(
-            String.format(" %-3d %-3.0f %-3.0f %-3.0f %-3.0f %-3d %-3d %-3d", motion.getStartTick(),
-                motion.getInitialPos().getX(),
-                motion.getInitialPos().getY(), motion.getInitialWidth(), motion.getInitialHeight(),
-                motion.getInitialColor().getRed(),
-                motion.getInitialColor().getGreen(), motion.getInitialColor().getBlue()));
-
-        builder.append("   ");
-
-        builder.append(
-            String.format(" %-3d %-3.0f %-3.0f %-3.0f %-3.0f %-3d %-3d %d", motion.getEndTick(),
-                motion.getFinalPos().getX(),
-                motion.getFinalPos().getY(), motion.getFinalWidth(), motion.getFinalHeight(),
-                motion.getFinalColor().getRed(),
-                motion.getFinalColor().getGreen(), motion.getFinalColor().getBlue()));
-
-        builder.append("\n");
-      }
-      builder.append("\n\n");
-    }
-    // remove last newlines
-    builder.delete(builder.length() - 3, builder.length());
-
-    return builder.toString();
-  }
-   */
-
 }
