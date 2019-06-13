@@ -19,7 +19,7 @@ public class Rectangle extends AbstractShape {
    * @param height the height of the cs3500.animator.model.Rectangle.
    * @param visible whether or not the cs3500.animator.model.Rectangle is visible.
    */
-  Rectangle(String name, double x, double y, Color color, double width, double height,
+  public Rectangle(String name, double x, double y, Color color, double width, double height,
       boolean visible) {
     super(name, x, y, color, width, height, visible);
   }
@@ -34,7 +34,7 @@ public class Rectangle extends AbstractShape {
    * @param height the height of the cs3500.animator.model.Rectangle.
    * @param visible whether or not the cs3500.animator.model.Rectangle is visible.
    */
-  Rectangle(String name, Point2D pos, Color color, double width, double height, boolean visible) {
+  public Rectangle(String name, Point2D pos, Color color, double width, double height, boolean visible) {
     super(name, pos, color, width, height, visible);
   }
 
