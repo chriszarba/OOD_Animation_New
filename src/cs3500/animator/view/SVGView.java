@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -23,19 +24,30 @@ public class SVGView implements IView {
 
   private DocumentBuilder builder;
   private OutputStream stream;
+  private int ticksPerSecond;
 
-  public SVGView(OutputStream stream) {
+  public SVGView(OutputStream stream, int ticksPerSecond) {
     if(stream == null){
       throw new IllegalArgumentException("null stream");
     }
-    this.builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+    try{
+      this.builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+    }catch(ParserConfigurationException e){
+      // TODO
+    }
     this.stream = stream;
+    this.ticksPerSecond = ticksPerSecond;
   }
 
   @Override
   public void render(IReadOnlyModel model) {
     Document dom = this.builder.newDocument();
     Element rootEl = dom.createElement("svg");
+    rootEl.setAttribute("version", "1.1");
+    rootEl.setAttribute("width", "500"); // TODO
+    rootEl.setAttribute("height", "500"); // TODO
+    //rootEl.setAttribute("xmls", "https://www.w3.org/2000/svg");
+    //rootEl.setAttribute("xmls:xlink", "https://www.w3.org/1999/xlink");
     // TODO: svg attributes
 
     for(IReadOnlyShape shape : model.getAllShapes()){
@@ -75,12 +87,12 @@ public class SVGView implements IView {
     String idString = shape.getName() + "-motion" + count;
     IMotion lastMotion = null;
     for(IMotion motion : motions){
-      if(lastMotion.getEndTick() != motion.getStartTick()){
+      if(lastMotion != null && lastMotion.getEndTick() != motion.getStartTick()){
         // TODO
       }
       lastMotion = motion;
       // Create Animations associated with shape
-      String durString = this.getDurationString(motion.getStartTick(), motion.getEndTick(), );
+      String durString = this.getDurationString(motion.getStartTick(), motion.getEndTick());
 
       if(Math.abs(motion.getInitialPos().getX() - motion.getFinalPos().getX()) > 0.01){
         // animate x position change
@@ -158,9 +170,9 @@ public class SVGView implements IView {
     return sb.toString();
   }
 
-  private String getDurationString(int startTick, int endTick, int tickPerSecond){
-    double durInSec = (endTick - startTick) / tickPerSecond;
-    return String.format(".1f", durInSec) + "s";
+  private String getDurationString(int startTick, int endTick){
+    double durInSec = (endTick - startTick) / this.ticksPerSecond;
+    return String.format("%.0f", durInSec) + "s";
   }
 
   private String typeToTag(ShapeType type){
