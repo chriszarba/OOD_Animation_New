@@ -18,7 +18,10 @@ public class TextView implements IView {
   }
 
   @Override
-  public void render(IReadOnlyModel model) {
+  public void render(IReadOnlyModel model) throws IllegalArgumentException {
+    if(model == null){
+      throw new IllegalArgumentException("null model");
+    }
     StringBuilder builder = new StringBuilder();
     for (IReadOnlyShape shape : model.getAllShapes()) {
       builder.append("shape ");

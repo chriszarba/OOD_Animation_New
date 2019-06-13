@@ -31,7 +31,10 @@ public class GUIView extends JPanel implements IView {
   }
 
   @Override
-  public void render(IReadOnlyModel model) {
+  public void render(IReadOnlyModel model) throws IllegalArgumentException {
+    if(model == null){
+      throw new IllegalArgumentException("null model");
+    }
     this.shapes = model.getAllShapes();
     int ms = (int) (((1/ ((double) ticksPerSecond)) * 1000) + 0.5);
     this.timer = new Timer(ms, new ActionListener() {

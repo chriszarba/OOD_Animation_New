@@ -8,7 +8,10 @@ public class OurController implements IController {
   private IView view;
   private IModel model;
 
-  public OurController(IView view, IModel model){
+  public OurController(IView view, IModel model) throws IllegalArgumentException {
+    if(view == null || model == null){
+      throw new IllegalArgumentException("null argument");
+    }
     this.view = view;
     this.model = model;
   }
