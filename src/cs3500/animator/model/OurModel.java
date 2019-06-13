@@ -1,8 +1,11 @@
 package cs3500.animator.model;
 
+import cs3500.animator.util.AnimationBuilder;
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +18,82 @@ public class OurModel implements IModel {
 
   protected Map<String, IShape> shapesMap;
   protected Map<String, List<IMotion>> motionsMap;
+
+  public static final class Builder implements AnimationBuilder<IModel> {
+    private Map<String, String> shapes;
+    private Map<String, List<IMotion>> motionMap;
+
+    @Override
+    public IModel build() {
+      IModel model = new OurModel();
+      // add shapes
+      for(String name : this.shapes.keySet()){
+        boolean inserted = false;
+        for(IMotion motion : this.motionMap.get(name)){
+          if(motion.getStartTick() == 0){
+            model.addShape(name, this.shapeStringToType(this.shapes.get(name)), motion.getInitialPos(), motion.getInitialWidth(), motion.getInitialHeight(), motion.getInitialColor());
+            break;
+          }
+        }
+        if(!inserted){
+          // TODO
+        }
+      }
+
+      // add motions
+      for(Map.Entry<String, List<IMotion>> entry : this.motionMap.entrySet()){
+        for(IMotion motion : entry.getValue()){
+          model.addMotion(entry.getKey(), motion.getStartTick(), motion.getEndTick(), motion.getInitialPos(), motion.getFinalPos(), motion.getInitialWidth(), motion.getInitialHeight(), motion.getFinalWidth(), motion.getFinalHeight(), motion.getInitialColor(), motion.getFinalColor())
+        }
+      }
+
+      return model;
+    }
+
+    private ShapeType shapeStringToType(String type){
+      switch (type){
+        case "ellipse":
+          return ShapeType.ELLIPSE;
+        case "rectangle":
+          return ShapeType.RECTANGLE;
+      }
+    }
+
+    @Override
+    public AnimationBuilder<IModel> setBounds(int x, int y, int width, int height) {
+      return this;
+    }
+
+    @Override
+    public AnimationBuilder<IModel> declareShape(String name, String type) {
+      if(this.shapes == null){
+        this.shapes = new HashMap<>();
+      }
+      this.shapes.put(name, type);
+      return this;
+    }
+
+    @Override
+    public AnimationBuilder<IModel> addMotion(String name, int t1, int x1, int y1, int w1, int h1,
+        int r1, int g1, int b1, int t2, int x2, int y2, int w2, int h2, int r2, int g2, int b2) {
+      if(this.motionMap == null){
+        this.motionMap = new HashMap<>();
+      }
+      if(!this.motionMap.containsKey(name)){
+        this.motionMap.put(name, new ArrayList<>());
+      }
+      this.motionMap.get(name).add(new OurMotion(t1, t2, new Point2D.Double(x1, y1), new Point2D.Double(x2, y2), w1, h1, w2, h2,
+          new Color(r1, g1, b1), new Color(r2, g2, b2)));
+      return this;
+    }
+
+    @Override
+    public AnimationBuilder<IModel> addKeyframe(String name, int t, int x, int y, int w, int h,
+        int r, int g, int b) {
+      // TODO
+      return this;
+    }
+  }
 
   /**
    * Constructs a new model.

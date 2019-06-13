@@ -5,7 +5,7 @@ import cs3500.animator.model.IReadOnlyModel;
 import cs3500.animator.model.IReadOnlyShape;
 import cs3500.animator.model.ShapeType;
 import java.awt.Color;
-import java.io.FileWriter;
+import java.io.OutputStream;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,11 +22,14 @@ import org.w3c.dom.Element;
 public class SVGView implements IView {
 
   private DocumentBuilder builder;
-  private FileWriter writer;
+  private OutputStream stream;
 
-  public SVGView(String filepath) {
+  public SVGView(OutputStream stream) {
+    if(stream == null){
+      throw new IllegalArgumentException("null stream");
+    }
     this.builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-    writer = new FileWriter(filepath);
+    this.stream = stream;
   }
 
   @Override
@@ -49,7 +52,7 @@ public class SVGView implements IView {
       tr.setOutputProperty(OutputKeys.INDENT, "yes");
       tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
       tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-      tr.transform(new DOMSource(dom), new StreamResult(this.writer));
+      tr.transform(new DOMSource(dom), new StreamResult(this.stream));
     }catch(TransformerConfigurationException e){
       // TODO
     }catch(TransformerException e){
@@ -73,7 +76,7 @@ public class SVGView implements IView {
     IMotion lastMotion = null;
     for(IMotion motion : motions){
       if(lastMotion.getEndTick() != motion.getStartTick()){
-        // TODO: 
+        // TODO
       }
       lastMotion = motion;
       // Create Animations associated with shape
@@ -120,7 +123,7 @@ public class SVGView implements IView {
       }
 
       beginString = shape.getName() + "-motion" + count + ".end";
-    }
+   }
 
     return shapeEl;
   }
