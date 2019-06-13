@@ -35,7 +35,7 @@ public class SVGView implements IView {
       factory.setNamespaceAware(true);
       this.builder = factory.newDocumentBuilder();
     } catch (ParserConfigurationException e) {
-      // TODO
+      throw new IllegalStateException("DocumentBuilderFactory Failed to build Document");
     }
     this.stream = stream;
     this.ticksPerSecond = ticksPerSecond;
@@ -71,9 +71,9 @@ public class SVGView implements IView {
       tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
       tr.transform(new DOMSource(dom), new StreamResult(this.stream));
     } catch (TransformerConfigurationException e) {
-      // TODO
+      throw new IllegalStateException("Transformer Factory failed to build Transformer");
     } catch (TransformerException e) {
-      // TODO
+      throw new IllegalStateException("Transformer failed to transform");
     }
   }
 
@@ -95,7 +95,7 @@ public class SVGView implements IView {
         shapeEl.setAttribute("cy", this.doubleToIntString(shape.getY() + (shape.getHeight() / 2)));
         break;
       default:
-        // TODO
+        // This should be impossible
     }
     shapeEl.setAttribute("fill", this.colorToRGBString(shape.getColor()));
 
@@ -129,7 +129,7 @@ public class SVGView implements IView {
                 durString, beginString));
             break;
           default:
-            // TODO
+            // This is impossible
         }
         ++count;
         idString = shape.getName() + "_motion" + count;
@@ -152,7 +152,7 @@ public class SVGView implements IView {
                 durString, beginString));
             break;
           default:
-            // TODO
+            // This is impossible
         }
         ++count;
         idString = shape.getName() + "_motion" + count;
@@ -173,7 +173,7 @@ public class SVGView implements IView {
                 this.doubleToIntString(motion.getFinalWidth() / 2), durString, beginString));
             break;
           default:
-            // TODO
+            // This is impossible
         }
         ++count;
         idString = shape.getName() + "_motion" + count;
@@ -194,7 +194,7 @@ public class SVGView implements IView {
                 this.doubleToIntString(motion.getFinalHeight() / 2), durString, beginString));
             break;
           default:
-            // TODO
+            // This is impossible
         }
         ++count;
         idString = shape.getName() + "_motion" + count;

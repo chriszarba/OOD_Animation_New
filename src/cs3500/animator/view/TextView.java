@@ -59,7 +59,7 @@ public class TextView implements IView {
     try{
       this.appendable.append(builder.toString());
     }catch(IOException e){
-      // TODO
+      throw new IllegalStateException("Failed to append to appendable");
     }
   }
 

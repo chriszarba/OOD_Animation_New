@@ -4,20 +4,14 @@ import cs3500.animator.controller.IController;
 import cs3500.animator.controller.OurController;
 import cs3500.animator.model.IModel;
 import cs3500.animator.model.OurModel;
-import cs3500.animator.model.OurModel.Builder;
-import cs3500.animator.model.ShapeType;
 import cs3500.animator.util.AnimationReader;
 import cs3500.animator.view.GUIView;
 import cs3500.animator.view.IView;
 import cs3500.animator.view.SVGView;
 import cs3500.animator.view.TextView;
-import java.awt.Color;
-import java.awt.geom.Point2D;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.OutputStream;
 
 public class Excellence {
@@ -69,8 +63,7 @@ public class Excellence {
       try{
         AnimationReader.parseFile( new FileReader(inputFile), builder);
       }catch(FileNotFoundException e){
-        System.out.println("FileReader Failed");
-        // TODO
+        return;
       }
       model = builder.build();
     }
@@ -93,10 +86,8 @@ public class Excellence {
       try{
         return new FileOutputStream(output);
       }catch(FileNotFoundException e){
-        System.out.println("FileOutputStream failed!");
-        // TODO
+        return null;
       }
-      return null;
     }
 
     private static Appendable buildAppendable() {

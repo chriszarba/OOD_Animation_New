@@ -261,10 +261,10 @@ public class OurModelTest {
         .addShape("test_rec", ShapeType.RECTANGLE, new Point2D.Double(0, 0), 10, 20, Color.RED));
 
     assertEquals(true, model
-        .addMotion("test_rec", 0, 10, new Point2D.Double(0, 0), new Point2D.Double(10, 10), 20, 25,
+        .addMotion("test_rec", 1, 10, new Point2D.Double(0, 0), new Point2D.Double(10, 10), 20, 25,
             10, 15, Color.RED, Color.BLUE));
     assertEquals(true, model
-        .addMotion("test_rec", 11, 20, new Point2D.Double(10, 10), new Point2D.Double(10, 0), 10,
+        .addMotion("test_rec", 10, 20, new Point2D.Double(10, 10), new Point2D.Double(10, 0), 10,
             15, 30, 35, Color.BLUE, Color.GREEN));
   }
 

@@ -40,8 +40,8 @@ public class OurModel implements IModel {
         if (!model
             .addShape(name, this.shapeStringToType(this.shapes.get(name)), motion.getInitialPos(),
                 motion.getInitialWidth(), motion.getInitialHeight(), motion.getInitialColor())) {
-          System.out.println("Not Inserted");
-          // TODO
+          //System.out.println("Not Inserted");
+          return null;
         }
       }
 
@@ -79,9 +79,9 @@ public class OurModel implements IModel {
           return ShapeType.ELLIPSE;
         case "rectangle":
           return ShapeType.RECTANGLE;
+        default:
+          return null;
       }
-      // TODO
-      return null;
     }
 
     @Override
@@ -196,9 +196,10 @@ public class OurModel implements IModel {
     // if there is no entry for this name, add one
     if (!this.motionsMap.containsKey(name)) {
       this.motionsMap.put(name, new ArrayList<>());
+      this.motionsMap.get(name).add(motion);
+      return true;
     }
 
-    // TODO: no gaps between motions
     // insertion sort
     boolean insert = false;
     int index = 0;
@@ -214,10 +215,7 @@ public class OurModel implements IModel {
             .getStartTick()) {
           // ensure if the endTick is the same as this startTick the parameters are the same
           IMotion otherMotion = this.motionsMap.get(name).get(index - 1);
-          if (!motion.getInitialPos().equals(otherMotion.getFinalPos())
-              || motion.getInitialWidth() != otherMotion.getFinalWidth()
-              || motion.getInitialHeight() != otherMotion.getFinalHeight() || !motion
-              .getInitialColor().equals(otherMotion.getFinalColor())) {
+          if(this.endStartLineUp(otherMotion, motion)){
             return false;
           }
         }
@@ -228,10 +226,23 @@ public class OurModel implements IModel {
 
     if (insert) {
       this.motionsMap.get(name).add(index, motion);
-    } else {
-      this.motionsMap.get(name).add(motion);
+    } else if(motion.getStartTick() == this.motionsMap.get(name).get(this.motionsMap.get(name).size()-1).getEndTick()){
+      IMotion otherMotion = this.motionsMap.get(name).get(this.motionsMap.get(name).size()-1);
+      if(this.endStartLineUp(otherMotion, motion)) {
+        this.motionsMap.get(name).add(motion);
+        return true;
+      }
+      return false;
     }
     return true;
+  }
+
+  private boolean endStartLineUp(IMotion first, IMotion second){
+    return first.getEndTick() == second.getStartTick()
+        && Math.abs(first.getFinalWidth() - second.getInitialWidth()) < 0.01
+        && Math.abs(first.getFinalHeight() - second.getInitialHeight()) < 0.01
+        && first.getFinalPos().equals(second.getInitialPos())
+        && first.getFinalColor().equals(second.getInitialColor());
   }
 
   @Override
