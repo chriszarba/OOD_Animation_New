@@ -27,14 +27,14 @@ public class SVGView implements IView {
   private int ticksPerSecond;
 
   public SVGView(OutputStream stream, int ticksPerSecond) {
-    if(stream == null){
+    if (stream == null) {
       throw new IllegalArgumentException("null stream");
     }
-    try{
+    try {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       factory.setNamespaceAware(true);
       this.builder = factory.newDocumentBuilder();
-    }catch(ParserConfigurationException e){
+    } catch (ParserConfigurationException e) {
       // TODO
     }
     this.stream = stream;
@@ -42,7 +42,11 @@ public class SVGView implements IView {
   }
 
   @Override
-  public void render(IReadOnlyModel model) {
+  public void render(IReadOnlyModel model) throws IllegalArgumentException {
+    if (model == null) {
+      throw new IllegalArgumentException("null model");
+    }
+
     Document dom = this.builder.newDocument();
     Element rootEl = dom.createElement("svg");
     rootEl.setAttribute("version", "1.1");
@@ -51,10 +55,10 @@ public class SVGView implements IView {
     rootEl.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     rootEl.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
 
-    for(IReadOnlyShape shape : model.getAllShapes()){
-      rootEl.appendChild(this.createShapeElement(shape, model.getShapeMotions(shape.getName()), dom));
+    for (IReadOnlyShape shape : model.getAllShapes()) {
+      rootEl
+          .appendChild(this.createShapeElement(shape, model.getShapeMotions(shape.getName()), dom));
     }
-
 
     dom.appendChild(rootEl);
     // write to file
@@ -66,9 +70,9 @@ public class SVGView implements IView {
       tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
       tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
       tr.transform(new DOMSource(dom), new StreamResult(this.stream));
-    }catch(TransformerConfigurationException e){
+    } catch (TransformerConfigurationException e) {
       // TODO
-    }catch(TransformerException e){
+    } catch (TransformerException e) {
       // TODO
     }
   }
@@ -77,10 +81,22 @@ public class SVGView implements IView {
     Element shapeEl = dom.createElement(this.typeToTag(shape.getShapeType()));
 
     shapeEl.setAttribute("id", shape.getName());
-    shapeEl.setAttribute("x", this.doubleToIntString(shape.getX()));
-    shapeEl.setAttribute("y", this.doubleToIntString(shape.getY()));
-    shapeEl.setAttribute("width", this.doubleToIntString(shape.getWidth()));
-    shapeEl.setAttribute("height", this.doubleToIntString(shape.getHeight()));
+    switch (shape.getShapeType()) {
+      case RECTANGLE:
+        shapeEl.setAttribute("width", this.doubleToIntString(shape.getWidth()));
+        shapeEl.setAttribute("height", this.doubleToIntString(shape.getHeight()));
+        shapeEl.setAttribute("x", this.doubleToIntString(shape.getX()));
+        shapeEl.setAttribute("y", this.doubleToIntString(shape.getY()));
+        break;
+      case ELLIPSE:
+        shapeEl.setAttribute("rx", this.doubleToIntString(shape.getWidth() / 2));
+        shapeEl.setAttribute("ry", this.doubleToIntString(shape.getHeight() / 2));
+        shapeEl.setAttribute("cx", this.doubleToIntString(shape.getX() + (shape.getWidth() / 2)));
+        shapeEl.setAttribute("cy", this.doubleToIntString(shape.getY() + (shape.getHeight() / 2)));
+        break;
+      default:
+        // TODO
+    }
     shapeEl.setAttribute("fill", this.colorToRGBString(shape.getColor()));
 
     int count = 0;
@@ -88,70 +104,124 @@ public class SVGView implements IView {
     String idString = shape.getName() + "_motion" + count;
     IMotion lastMotion = null;
     boolean newAnimate = false;
-    for(IMotion motion : motions){
+    for (IMotion motion : motions) {
       int beginInt = count;
-      if(lastMotion != null && lastMotion.getEndTick() != motion.getStartTick()){
+      if (lastMotion != null && lastMotion.getEndTick() != motion.getStartTick()) {
         // TODO
       }
       lastMotion = motion;
       // Create Animations associated with shape
       String durString = this.getDurationString(motion.getStartTick(), motion.getEndTick());
 
-      if(Math.abs(motion.getInitialPos().getX() - motion.getFinalPos().getX()) > 0.01){
+      if (Math.abs(motion.getInitialPos().getX() - motion.getFinalPos().getX()) > 0.01) {
         // animate x position change
-        shapeEl.appendChild(this.createAnimateElement(dom, idString, "x", this.doubleToIntString(motion.getInitialPos().getX()),
-            this.doubleToIntString(motion.getFinalPos().getX()), durString, beginString));
+        switch (shape.getShapeType()) {
+          case RECTANGLE:
+            shapeEl.appendChild(this.createAnimateElement(dom, idString, "x",
+                this.doubleToIntString(motion.getInitialPos().getX()),
+                this.doubleToIntString(motion.getFinalPos().getX()), durString, beginString));
+            break;
+          case ELLIPSE:
+            shapeEl.appendChild(this.createAnimateElement(dom, idString, "cx",
+                this.doubleToIntString(
+                    motion.getInitialPos().getX() + (motion.getInitialWidth() / 2)),
+                this.doubleToIntString(motion.getFinalPos().getX() + (motion.getFinalWidth() / 2)),
+                durString, beginString));
+            break;
+          default:
+            // TODO
+        }
         ++count;
         idString = shape.getName() + "_motion" + count;
         newAnimate = true;
       }
 
-      if(Math.abs(motion.getInitialPos().getY() - motion.getFinalPos().getY()) > 0.01){
+      if (Math.abs(motion.getInitialPos().getY() - motion.getFinalPos().getY()) > 0.01) {
         // animate y position change
-        shapeEl.appendChild(this.createAnimateElement(dom, idString, "y", this.doubleToIntString(motion.getInitialPos().getY()),
-            this.doubleToIntString(motion.getFinalPos().getY()), durString, beginString));
+        switch (shape.getShapeType()) {
+          case RECTANGLE:
+            shapeEl.appendChild(this.createAnimateElement(dom, idString, "y",
+                this.doubleToIntString(motion.getInitialPos().getY()),
+                this.doubleToIntString(motion.getFinalPos().getY()), durString, beginString));
+            break;
+          case ELLIPSE:
+            shapeEl.appendChild(this.createAnimateElement(dom, idString, "cy",
+                this.doubleToIntString(
+                    motion.getInitialPos().getY() + (motion.getInitialHeight() / 2)),
+                this.doubleToIntString(motion.getFinalPos().getY() + (motion.getFinalHeight() / 2)),
+                durString, beginString));
+            break;
+          default:
+            // TODO
+        }
         ++count;
         idString = shape.getName() + "_motion" + count;
         newAnimate = true;
       }
 
-      if(Math.abs(motion.getInitialWidth() - motion.getFinalWidth()) > 0.01){
+      if (Math.abs(motion.getInitialWidth() - motion.getFinalWidth()) > 0.01) {
         // animate width change
-        shapeEl.appendChild(this.createAnimateElement(dom, idString, "width", this.doubleToIntString(motion.getInitialWidth()),
-            this.doubleToIntString(motion.getFinalWidth()), durString, beginString));
+        switch (shape.getShapeType()) {
+          case RECTANGLE:
+            shapeEl.appendChild(this.createAnimateElement(dom, idString, "width",
+                this.doubleToIntString(motion.getInitialWidth()),
+                this.doubleToIntString(motion.getFinalWidth()), durString, beginString));
+            break;
+          case ELLIPSE:
+            shapeEl.appendChild(this.createAnimateElement(dom, idString, "rx",
+                this.doubleToIntString(motion.getInitialWidth() / 2),
+                this.doubleToIntString(motion.getFinalWidth() / 2), durString, beginString));
+            break;
+          default:
+            // TODO
+        }
         ++count;
         idString = shape.getName() + "_motion" + count;
         newAnimate = true;
       }
 
-      if(Math.abs(motion.getInitialHeight() - motion.getFinalHeight()) > 0.01){
+      if (Math.abs(motion.getInitialHeight() - motion.getFinalHeight()) > 0.01) {
         // animate height change
-        shapeEl.appendChild(this.createAnimateElement(dom, idString, "width", this.doubleToIntString(motion.getInitialHeight()),
-            this.doubleToIntString(motion.getFinalHeight()), durString, beginString));
+        switch (shape.getShapeType()) {
+          case RECTANGLE:
+            shapeEl.appendChild(this.createAnimateElement(dom, idString, "height",
+                this.doubleToIntString(motion.getInitialHeight()),
+                this.doubleToIntString(motion.getFinalHeight()), durString, beginString));
+            break;
+          case ELLIPSE:
+            shapeEl.appendChild(this.createAnimateElement(dom, idString, "ry",
+                this.doubleToIntString(motion.getInitialHeight() / 2),
+                this.doubleToIntString(motion.getFinalHeight() / 2), durString, beginString));
+            break;
+          default:
+            // TODO
+        }
         ++count;
         idString = shape.getName() + "_motion" + count;
         newAnimate = true;
       }
 
-      if(!motion.getInitialColor().equals(motion.getFinalColor())){
+      if (!motion.getInitialColor().equals(motion.getFinalColor())) {
         // animate color change
-        shapeEl.appendChild(this.createAnimateElement(dom, idString, "fill", this.colorToRGBString(motion.getInitialColor()),
+        shapeEl.appendChild(this.createAnimateElement(dom, idString, "fill",
+            this.colorToRGBString(motion.getInitialColor()),
             this.colorToRGBString(motion.getFinalColor()), durString, beginString));
         ++count;
         idString = shape.getName() + "_motion" + count;
         newAnimate = true;
       }
 
-      if(newAnimate){
+      if (newAnimate) {
         beginString = shape.getName() + "_motion" + beginInt + ".end";
       }
       newAnimate = false;
-   }
+    }
 
     return shapeEl;
   }
 
-  private Element createAnimateElement(Document dom, String id, String attName, String from, String to, String dur, String begin) {
+  private Element createAnimateElement(Document dom, String id, String attName, String from,
+      String to, String dur, String begin) {
     Element animateEl = dom.createElement("animate");
     animateEl.setAttribute("id", id);
     animateEl.setAttribute("attributeType", "XML");
@@ -166,11 +236,11 @@ public class SVGView implements IView {
     return animateEl;
   }
 
-  private String doubleToIntString(double d){
+  private String doubleToIntString(double d) {
     return Integer.toString(((int) (d + 0.5)));
   }
 
-  private String colorToRGBString(Color c){
+  private String colorToRGBString(Color c) {
     StringBuilder sb = new StringBuilder(30);
 
     sb.append("rgb( ");
@@ -181,13 +251,13 @@ public class SVGView implements IView {
     return sb.toString();
   }
 
-  private String getDurationString(int startTick, int endTick){
+  private String getDurationString(int startTick, int endTick) {
     double durInSec = (endTick - startTick) / this.ticksPerSecond;
     return String.format("%.0f", durInSec) + "s";
   }
 
-  private String typeToTag(ShapeType type){
-    switch (type){
+  private String typeToTag(ShapeType type) {
+    switch (type) {
       case RECTANGLE:
         return "rect";
       case ELLIPSE:

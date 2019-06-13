@@ -27,18 +27,20 @@ public class OurModel implements IModel {
     @Override
     public IModel build() {
       IModel model = new OurModel();
+      if (this.shapes == null || motionMap == null) {
+        System.out.println("Null shape/motion map in builder");
+        return null;
+      }
       // add shapes
       for (String name : this.shapes.keySet()) {
-        boolean inserted = false;
-        for (IMotion motion : this.motionMap.get(name)) {
-          if (motion.getStartTick() == 1) {
-            model.addShape(name, this.shapeStringToType(this.shapes.get(name)),
-                motion.getInitialPos(), motion.getInitialWidth(), motion.getInitialHeight(),
-                motion.getInitialColor());
-            break;
-          }
+        IMotion motion = this.getStartMotion(name);
+        if(motion == null){
+          System.out.println("No Motions");
         }
-        if (!inserted) {
+        if (!model
+            .addShape(name, this.shapeStringToType(this.shapes.get(name)), motion.getInitialPos(),
+                motion.getInitialWidth(), motion.getInitialHeight(), motion.getInitialColor())) {
+          System.out.println("Not Inserted");
           // TODO
         }
       }
@@ -54,6 +56,21 @@ public class OurModel implements IModel {
       }
 
       return model;
+    }
+
+    private IMotion getStartMotion(String shapeName) {
+      if (this.motionMap.get(shapeName).isEmpty()) {
+        return null;
+      }
+      List<IMotion> motionList = this.motionMap.get(shapeName);
+      IMotion min = this.motionMap.get(shapeName).get(0);
+      for (int i = 0; i < motionList.size(); ++i) {
+        if (motionList.get(i).getStartTick() < min.getStartTick()) {
+          min = motionList.get(i);
+        }
+      }
+
+      return min;
     }
 
     private ShapeType shapeStringToType(String type) {
@@ -222,7 +239,7 @@ public class OurModel implements IModel {
     List<IReadOnlyShape> shapes = new ArrayList<IReadOnlyShape>();
     for (IReadOnlyShape shape : this.getAllShapes()) {
       IReadOnlyShape s = this.getShapeAtTick(shape, tick);
-      if(s != null) {
+      if (s != null) {
         shapes.add(this.getShapeAtTick(shape, tick));
       }
 
@@ -243,7 +260,7 @@ public class OurModel implements IModel {
 
   private IReadOnlyShape getShapeAtTick(IReadOnlyShape shape, int tick) {
     IMotion motion = this.getMotionAtTick(shape, tick);
-    if(motion == null){
+    if (motion == null) {
       return null;
     }
     int start = motion.getStartTick();
@@ -284,9 +301,9 @@ public class OurModel implements IModel {
     int endRed = end.getRed();
     int endGreen = end.getGreen();
     int endBlue = end.getBlue();
-    return new Color((int)this.tween(red, endRed, startTick, endTick, tick),
-            (int)this.tween(green, endGreen, startTick, endTick, tick),
-            (int)this.tween(blue, endBlue, startTick, endTick, tick));
+    return new Color((int) this.tween(red, endRed, startTick, endTick, tick),
+        (int) this.tween(green, endGreen, startTick, endTick, tick),
+        (int) this.tween(blue, endBlue, startTick, endTick, tick));
   }
 
   @Override
