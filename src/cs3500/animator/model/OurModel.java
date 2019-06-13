@@ -230,7 +230,7 @@ public class OurModel implements IModel {
     return shapes;
   }
 
-  // Changes below need to be documented
+  // given a shape and tick, returns the corresponding motion object
   private IMotion getMotionAtTick(IReadOnlyShape shape, int tick) {
     List<IMotion> motions = this.getShapeMotions(shape.getName());
     for (IMotion m : motions) {
@@ -238,9 +238,10 @@ public class OurModel implements IModel {
         return m;
       }
     }
-    return null; // FIGURE OUT WHAT TO DO ABOUT THIS
+    return null;
   }
 
+  // Given a shape and a tick, calculates what the shape will be at that tick and returns it
   private IReadOnlyShape getShapeAtTick(IReadOnlyShape shape, int tick) {
     IMotion motion = this.getMotionAtTick(shape, tick);
     if(motion == null){
@@ -270,14 +271,21 @@ public class OurModel implements IModel {
     return null;
   }
 
+  // tweening function to get the "inbetweens" in the animation
   private double tween(double start, double end, double startTick, double endTick, double tick) {
+    if(Math.abs(start - end) > 0.001){
+      return start;
+    }
     double endResult = start * ((endTick - tick) / (endTick - startTick))
         + end * ((tick - startTick) / (endTick - startTick));
     return endResult;
   }
 
-
+  // tweening function for colors
   private Color tweenColor(Color start, Color end, int startTick, int endTick, int tick) {
+    if(start.equals(end)){
+      return start;
+    }
     int red = start.getRed();
     int green = start.getGreen();
     int blue = start.getBlue();

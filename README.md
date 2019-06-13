@@ -62,3 +62,9 @@ In IReadOnlyModel interface:
 In IReadOnlyShape:
     Added String getName(), added field to AbstractShape and subclasses
 
+In OurModel:
+    Added  IMotion getMotionAtTick(IReadOnlyShape shape, int tick),
+           IReadOnlyShape getShapeAtTick(IReadOnlyShape shape, int tick),
+           double tween(double start, double end, double startTick, double endTick, double tick),
+           Color tweenColor(Color start, Color end, int startTick, int endTick, int tick),
+           and added functionality for List<IReadOnlyShape> animate(int tick).
