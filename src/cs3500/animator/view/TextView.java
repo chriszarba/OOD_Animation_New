@@ -4,6 +4,7 @@ import cs3500.animator.model.IMotion;
 import cs3500.animator.model.IReadOnlyModel;
 import cs3500.animator.model.IReadOnlyShape;
 import cs3500.animator.model.ShapeType;
+import java.io.IOException;
 
 public class TextView implements IView {
 
@@ -52,7 +53,11 @@ public class TextView implements IView {
     // remove last newlines
     builder.delete(builder.length() - 3, builder.length());
 
-    this.appendable.append(builder.toString());
+    try{
+      this.appendable.append(builder.toString());
+    }catch(IOException e){
+      // TODO
+    }
   }
 
   /**
