@@ -31,7 +31,9 @@ public class SVGView implements IView {
       throw new IllegalArgumentException("null stream");
     }
     try{
-      this.builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      factory.setNamespaceAware(true);
+      this.builder = factory.newDocumentBuilder();
     }catch(ParserConfigurationException e){
       // TODO
     }
@@ -44,11 +46,10 @@ public class SVGView implements IView {
     Document dom = this.builder.newDocument();
     Element rootEl = dom.createElement("svg");
     rootEl.setAttribute("version", "1.1");
-    rootEl.setAttribute("width", "500"); // TODO
-    rootEl.setAttribute("height", "500"); // TODO
-    //rootEl.setAttribute("xmls", "https://www.w3.org/2000/svg");
-    //rootEl.setAttribute("xmls:xlink", "https://www.w3.org/1999/xlink");
-    // TODO: svg attributes
+    //rootEl.setAttribute("width", "500"); // TODO
+    //rootEl.setAttribute("height", "500"); // TODO
+    rootEl.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    rootEl.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
 
     for(IReadOnlyShape shape : model.getAllShapes()){
       rootEl.appendChild(this.createShapeElement(shape, model.getShapeMotions(shape.getName()), dom));
@@ -84,9 +85,11 @@ public class SVGView implements IView {
 
     int count = 0;
     String beginString = "0s";
-    String idString = shape.getName() + "-motion" + count;
+    String idString = shape.getName() + "_motion" + count;
     IMotion lastMotion = null;
+    boolean newAnimate = false;
     for(IMotion motion : motions){
+      int beginInt = count;
       if(lastMotion != null && lastMotion.getEndTick() != motion.getStartTick()){
         // TODO
       }
@@ -99,7 +102,8 @@ public class SVGView implements IView {
         shapeEl.appendChild(this.createAnimateElement(dom, idString, "x", this.doubleToIntString(motion.getInitialPos().getX()),
             this.doubleToIntString(motion.getFinalPos().getX()), durString, beginString));
         ++count;
-        idString = shape.getName() + "-motion" + count;
+        idString = shape.getName() + "_motion" + count;
+        newAnimate = true;
       }
 
       if(Math.abs(motion.getInitialPos().getY() - motion.getFinalPos().getY()) > 0.01){
@@ -107,7 +111,8 @@ public class SVGView implements IView {
         shapeEl.appendChild(this.createAnimateElement(dom, idString, "y", this.doubleToIntString(motion.getInitialPos().getY()),
             this.doubleToIntString(motion.getFinalPos().getY()), durString, beginString));
         ++count;
-        idString = shape.getName() + "-motion" + count;
+        idString = shape.getName() + "_motion" + count;
+        newAnimate = true;
       }
 
       if(Math.abs(motion.getInitialWidth() - motion.getFinalWidth()) > 0.01){
@@ -115,7 +120,8 @@ public class SVGView implements IView {
         shapeEl.appendChild(this.createAnimateElement(dom, idString, "width", this.doubleToIntString(motion.getInitialWidth()),
             this.doubleToIntString(motion.getFinalWidth()), durString, beginString));
         ++count;
-        idString = shape.getName() + "-motion" + count;
+        idString = shape.getName() + "_motion" + count;
+        newAnimate = true;
       }
 
       if(Math.abs(motion.getInitialHeight() - motion.getFinalHeight()) > 0.01){
@@ -123,7 +129,8 @@ public class SVGView implements IView {
         shapeEl.appendChild(this.createAnimateElement(dom, idString, "width", this.doubleToIntString(motion.getInitialHeight()),
             this.doubleToIntString(motion.getFinalHeight()), durString, beginString));
         ++count;
-        idString = shape.getName() + "-motion" + count;
+        idString = shape.getName() + "_motion" + count;
+        newAnimate = true;
       }
 
       if(!motion.getInitialColor().equals(motion.getFinalColor())){
@@ -131,10 +138,14 @@ public class SVGView implements IView {
         shapeEl.appendChild(this.createAnimateElement(dom, idString, "fill", this.colorToRGBString(motion.getInitialColor()),
             this.colorToRGBString(motion.getFinalColor()), durString, beginString));
         ++count;
-        idString = shape.getName() + "-motion" + count;
+        idString = shape.getName() + "_motion" + count;
+        newAnimate = true;
       }
 
-      beginString = shape.getName() + "-motion" + count + ".end";
+      if(newAnimate){
+        beginString = shape.getName() + "_motion" + beginInt + ".end";
+      }
+      newAnimate = false;
    }
 
     return shapeEl;
@@ -148,9 +159,9 @@ public class SVGView implements IView {
     animateEl.setAttribute("from", from);
     animateEl.setAttribute("to", to);
     animateEl.setAttribute("dur", dur);
-    animateEl.setAttribute("repeatCount", "never");
+    //animateEl.setAttribute("repeatCount", "never");
     animateEl.setAttribute("begin", begin);
-    animateEl.setAttribute("fill", "remove");
+    animateEl.setAttribute("fill", "freeze");
 
     return animateEl;
   }
