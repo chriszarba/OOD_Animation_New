@@ -31,7 +31,7 @@ public class OurModel implements IModel {
       for (String name : this.shapes.keySet()) {
         boolean inserted = false;
         for (IMotion motion : this.motionMap.get(name)) {
-          if (motion.getStartTick() == 0) {
+          if (motion.getStartTick() == 1) {
             model.addShape(name, this.shapeStringToType(this.shapes.get(name)),
                 motion.getInitialPos(), motion.getInitialWidth(), motion.getInitialHeight(),
                 motion.getInitialColor());
@@ -100,7 +100,6 @@ public class OurModel implements IModel {
     @Override
     public AnimationBuilder<IModel> addKeyframe(String name, int t, int x, int y, int w, int h,
         int r, int g, int b) {
-      // TODO
       return this;
     }
   }
@@ -182,6 +181,7 @@ public class OurModel implements IModel {
       this.motionsMap.put(name, new ArrayList<>());
     }
 
+    // TODO: no gaps between motions
     // insertion sort
     boolean insert = false;
     int index = 0;
