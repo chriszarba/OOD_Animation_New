@@ -1,6 +1,8 @@
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import cs3500.animator.model.IMotion;
+import cs3500.animator.model.OurMotion;
 import java.awt.Color;
 import java.awt.geom.Point2D;
 

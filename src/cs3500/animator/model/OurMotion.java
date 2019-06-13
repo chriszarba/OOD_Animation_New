@@ -1,3 +1,5 @@
+package cs3500.animator.model;
+
 import java.awt.Color;
 import java.awt.geom.Point2D;
 
@@ -18,7 +20,7 @@ public class OurMotion implements IMotion {
   private final Color finalColor;
 
   /**
-   * Constructs a new OurMotion.
+   * Constructs a new cs3500.animator.model.OurMotion.
    *
    * @param startTick - the starting tick of the motion.
    * @param endTick - the ending tick of the motion.

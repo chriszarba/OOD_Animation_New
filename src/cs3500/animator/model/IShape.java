@@ -1,7 +1,9 @@
+package cs3500.animator.model;
+
 import java.awt.Color;
 
 /**
- * Interface to represent a shape, can be both read and changed unlike IReadOnlyShape.
+ * Interface to represent a shape, can be both read and changed unlike cs3500.animator.model.IReadOnlyShape.
  */
 public interface IShape extends IReadOnlyShape {
 

@@ -1,3 +1,5 @@
+package cs3500.animator.model;
+
 import java.awt.Color;
 
 /**
@@ -49,9 +51,11 @@ public interface IReadOnlyShape {
   double getHeight();
 
   /**
-   * Gets the ShapeType enum of a shape.
+   * Gets the cs3500.animator.model.ShapeType enum of a shape.
    *
-   * @return the ShapeType enum of a shape.
+   * @return the cs3500.animator.model.ShapeType enum of a shape.
    */
   ShapeType getShapeType();
+
+  String getName();
 }

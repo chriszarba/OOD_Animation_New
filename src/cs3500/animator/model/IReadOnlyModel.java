@@ -1,3 +1,5 @@
+package cs3500.animator.model;
+
 import java.util.List;
 
 /**
@@ -34,5 +36,9 @@ public interface IReadOnlyModel {
    *
    * @return A string that describes each shape and its associated motions.
    */
-  String getDescription();
+  //String getDescription();
+
+  List<IMotion> getShapeMotions(String name);
+
+  List<IReadOnlyShape> getAllShapes();
 }
