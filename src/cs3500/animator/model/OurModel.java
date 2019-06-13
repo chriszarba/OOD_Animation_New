@@ -209,7 +209,72 @@ public class OurModel implements IModel {
 
   @Override
   public List<IReadOnlyShape> animate(int tick) {
-    return new ArrayList<>();
+    List<IReadOnlyShape> shapes = new ArrayList<IReadOnlyShape>();
+    for(IReadOnlyShape shape : this.getAllShapes()){
+      shapes.add(this.getShapeAtTick(shape, tick));
+    }
+    return shapes;
+  }
+
+  // Changes below need to be documented
+  private IMotion getMotionAtTick(IReadOnlyShape shape, int tick){
+    List<IMotion> motions = this.getShapeMotions(shape.getName());
+    for(IMotion m : motions){
+      if(m.getStartTick() < tick && m.getEndTick() > tick){
+        return m;
+      }
+    }
+    return null; // FIGURE OUT WHAT TO DO ABOUT THIS
+  }
+
+  private IReadOnlyShape getShapeAtTick(IReadOnlyShape shape, int tick){
+    IMotion motion = this.getMotionAtTick(shape, tick);
+    int start = motion.getStartTick();
+    int end = motion.getEndTick();
+    IReadOnlyShape newShape;
+    double x = this.tween(motion.getInitialPos().getX(), motion.getFinalPos().getX(),
+            start, end, tick);
+    double y = this.tween(motion.getInitialPos().getY(), motion.getFinalPos().getY(),
+            start, end, tick);
+    double width = this.tween(motion.getInitialWidth(), motion.getFinalWidth(),
+            start, end, tick);
+    double height = this.tween(motion.getInitialHeight(), motion.getFinalHeight(),
+            start, end, tick);
+    Color c = this.tweenColor(motion.getInitialColor(), motion.getFinalColor(),
+            start, motion.getEndTick(), tick);
+    boolean visible = true; // need to do something about this
+    switch(shape.getShapeType()){
+      case ELLIPSE:
+        return new Ellipse(shape.getName(), x, y, c, width, height, visible);
+      case RECTANGLE:
+        return new Rectangle(shape.getName(), x, y, c, width, height, visible);
+        default:
+    }
+    return null;
+  }
+
+  private double tween(double start, double end, int startTick, int endTick, int tick){
+    double endResult = start * ((endTick - tick) / (endTick - startTick))
+            + end * ((tick - startTick) / (endTick - startTick));
+    return endResult;
+  }
+
+  private int tweenInt(int start, int end, int startTick, int endTick, int tick){
+    int endResult = start * ((endTick - tick) / (endTick - startTick))
+            + end * ((tick - startTick) / (endTick - startTick));
+    return endResult;
+  }
+
+  private Color tweenColor(Color start, Color end, int startTick, int endTick, int tick){
+    int red = start.getRed();
+    int green = start.getGreen();
+    int blue = start.getBlue();
+    int endRed = end.getRed();
+    int endGreen = end.getGreen();
+    int endBlue = end.getBlue();
+    return new Color(this.tweenInt(red, endRed, startTick, endTick, tick),
+            this.tweenInt(green, endGreen, startTick, endTick, tick),
+            this.tweenInt(blue, endBlue, startTick, endTick, tick));
   }
 
   @Override
