@@ -221,7 +221,11 @@ public class OurModel implements IModel {
   public List<IReadOnlyShape> animate(int tick) {
     List<IReadOnlyShape> shapes = new ArrayList<IReadOnlyShape>();
     for (IReadOnlyShape shape : this.getAllShapes()) {
-      shapes.add(this.getShapeAtTick(shape, tick));
+      IReadOnlyShape s = this.getShapeAtTick(shape, tick);
+      if(s != null) {
+        shapes.add(this.getShapeAtTick(shape, tick));
+      }
+
     }
     return shapes;
   }
@@ -239,6 +243,9 @@ public class OurModel implements IModel {
 
   private IReadOnlyShape getShapeAtTick(IReadOnlyShape shape, int tick) {
     IMotion motion = this.getMotionAtTick(shape, tick);
+    if(motion == null){
+      return null;
+    }
     int start = motion.getStartTick();
     int end = motion.getEndTick();
     IReadOnlyShape newShape;
@@ -263,17 +270,12 @@ public class OurModel implements IModel {
     return null;
   }
 
-  private double tween(double start, double end, int startTick, int endTick, int tick) {
+  private double tween(double start, double end, double startTick, double endTick, double tick) {
     double endResult = start * ((endTick - tick) / (endTick - startTick))
         + end * ((tick - startTick) / (endTick - startTick));
     return endResult;
   }
 
-  private int tweenInt(int start, int end, int startTick, int endTick, int tick) {
-    int endResult = start * ((endTick - tick) / (endTick - startTick))
-        + end * ((tick - startTick) / (endTick - startTick));
-    return endResult;
-  }
 
   private Color tweenColor(Color start, Color end, int startTick, int endTick, int tick) {
     int red = start.getRed();
@@ -282,9 +284,9 @@ public class OurModel implements IModel {
     int endRed = end.getRed();
     int endGreen = end.getGreen();
     int endBlue = end.getBlue();
-    return new Color(this.tweenInt(red, endRed, startTick, endTick, tick),
-        this.tweenInt(green, endGreen, startTick, endTick, tick),
-        this.tweenInt(blue, endBlue, startTick, endTick, tick));
+    return new Color((int)this.tween(red, endRed, startTick, endTick, tick),
+            (int)this.tween(green, endGreen, startTick, endTick, tick),
+            (int)this.tween(blue, endBlue, startTick, endTick, tick));
   }
 
   @Override
