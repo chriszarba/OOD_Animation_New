@@ -41,4 +41,9 @@ public interface IReadOnlyModel {
   List<IMotion> getShapeMotions(String name);
 
   List<IReadOnlyShape> getAllShapes();
+
+  int getCanvasWidth();
+  int getCanvasHeight();
+  int getBoundingX();
+  int getBoundingY();
 }

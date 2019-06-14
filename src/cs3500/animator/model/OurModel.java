@@ -18,11 +18,19 @@ public class OurModel implements IModel {
 
   protected Map<String, IShape> shapesMap;
   protected Map<String, List<IMotion>> motionsMap;
+  protected int canvasWidth;
+  protected int canvasHeight;
+  protected int boundingX;
+  protected int boundingY;
 
   public static final class Builder implements AnimationBuilder<IModel> {
 
     private Map<String, String> shapes;
     private Map<String, List<IMotion>> motionMap;
+    private int canvasWidth;
+    private int canvasHeight;
+    private int boundingX;
+    private int boundingY;
 
     @Override
     public IModel build() {
@@ -55,6 +63,11 @@ public class OurModel implements IModel {
         }
       }
 
+      model.setBoundingX(this.boundingX);
+      model.setBoundingY(this.boundingY);
+      model.setCanvasHeight(this.canvasHeight);
+      model.setCanvasWidth(this.canvasWidth);
+
       return model;
     }
 
@@ -86,6 +99,10 @@ public class OurModel implements IModel {
 
     @Override
     public AnimationBuilder<IModel> setBounds(int x, int y, int width, int height) {
+      this.boundingX = x;
+      this.boundingY = y;
+      this.canvasWidth = width;
+      this.canvasHeight = height;
       return this;
     }
 
@@ -127,6 +144,10 @@ public class OurModel implements IModel {
   public OurModel() {
     shapesMap = new LinkedHashMap<>();
     motionsMap = new LinkedHashMap<>();
+    this.canvasWidth = 1000;
+    this.canvasHeight = 1000;
+    this.boundingX = Integer.MAX_VALUE;
+    this.boundingY = Integer.MAX_VALUE;
   }
 
   @Override
@@ -181,6 +202,26 @@ public class OurModel implements IModel {
     } catch (IllegalArgumentException e) {
       return false;
     }
+  }
+
+  @Override
+  public void setCanvasWidth(int width) {
+    this.canvasWidth = width;
+  }
+
+  @Override
+  public void setCanvasHeight(int height) {
+    this.canvasHeight = height;
+  }
+
+  @Override
+  public void setBoundingX(int x) {
+    this.boundingX = x;
+  }
+
+  @Override
+  public void setBoundingY(int y) {
+    this.boundingY = y;
   }
 
   /**
@@ -348,6 +389,26 @@ public class OurModel implements IModel {
       copy.add(shape);
     }
     return copy;
+  }
+
+  @Override
+  public int getCanvasWidth() {
+    return this.canvasWidth;
+  }
+
+  @Override
+  public int getCanvasHeight() {
+    return this.canvasHeight;
+  }
+
+  @Override
+  public int getBoundingX() {
+    return this.boundingX;
+  }
+
+  @Override
+  public int getBoundingY() {
+    return this.boundingY;
   }
 
 }

@@ -11,7 +11,7 @@ public class TextView implements IView {
   private Appendable appendable;
 
   public TextView(Appendable ap) throws IllegalArgumentException {
-    if(ap == null){
+    if (ap == null) {
       throw new IllegalArgumentException("null appendable");
     }
     this.appendable = ap;
@@ -19,10 +19,15 @@ public class TextView implements IView {
 
   @Override
   public void render(IReadOnlyModel model) throws IllegalArgumentException {
-    if(model == null){
+    if (model == null) {
       throw new IllegalArgumentException("null model");
     }
     StringBuilder builder = new StringBuilder();
+
+    builder.append(String
+        .format("canvas %-3d %-3d %-4d %-4d\n", model.getBoundingX(), model.getBoundingY(),
+            model.getCanvasWidth(), model.getCanvasHeight()));
+
     for (IReadOnlyShape shape : model.getAllShapes()) {
       builder.append("shape ");
       builder.append(shape.getName());
@@ -56,9 +61,9 @@ public class TextView implements IView {
     // remove last newlines
     builder.delete(builder.length() - 3, builder.length());
 
-    try{
+    try {
       this.appendable.append(builder.toString());
-    }catch(IOException e){
+    } catch (IOException e) {
       throw new IllegalStateException("Failed to append to appendable");
     }
   }

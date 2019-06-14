@@ -50,8 +50,8 @@ public class SVGView implements IView {
     Document dom = this.builder.newDocument();
     Element rootEl = dom.createElement("svg");
     rootEl.setAttribute("version", "1.1");
-    //rootEl.setAttribute("width", "500"); // TODO
-    //rootEl.setAttribute("height", "500"); // TODO
+    rootEl.setAttribute("width", Integer.toString(model.getCanvasWidth()));
+    rootEl.setAttribute("height", Integer.toString(model.getCanvasHeight()));
     rootEl.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     rootEl.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
 
