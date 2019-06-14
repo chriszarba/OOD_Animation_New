@@ -14,7 +14,17 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.OutputStream;
 
+/**
+ * Class to contain the main method of the program.
+ */
 public class Excellence {
+
+  /**
+   * The main method of the program. Uses the command line arguments to
+   * construct a model and view, and plays the animation.
+   *
+   * @param args - the command line arguments.
+   */
   public static void main(String[] args){
     Excellence.ControllerBuilder.parseArgs(args);
     IController controller = Excellence.ControllerBuilder.buildController();
@@ -25,6 +35,10 @@ public class Excellence {
     controller.run();
   }
 
+  /**
+   * Static builder class to construct a controller (and the model and view)
+   * based on command line arguments.
+   */
   private static class ControllerBuilder {
     private static String viewString;
     private static String inputFile;
@@ -33,6 +47,11 @@ public class Excellence {
     private static IModel model;
     private static int ticksPerSecond;
 
+    /**
+     * Parses the command line arguments. Must be the first method called.
+     *
+     * @param args - the command line arguments.
+     */
     public static void parseArgs(String[] args){
       // reset variables
       viewString = null;
@@ -58,6 +77,10 @@ public class Excellence {
 
     }
 
+    /**
+     * Builds a model based on the given input file using {@link AnimationReader}.
+     * Currently the model immplementation used is {@link OurModel}.
+     */
     private static void buildModel() {
       OurModel.Builder builder = new OurModel.Builder();
       try{
@@ -68,6 +91,12 @@ public class Excellence {
       model = builder.build();
     }
 
+    /**
+     * Builds the controller based on the given arguments.
+     *
+     * @return - A controller containing the correct model and view based on the command
+     * line arguments. null if the required arguments were not provided.
+     */
     private static IController buildController() {
       if(inputFile == null || viewString == null){
         return null;
@@ -79,6 +108,13 @@ public class Excellence {
       return controller;
     }
 
+    /**
+     * Builds an output stream based on the given out argument, or
+     * System.out by default.
+     *
+     * @return an output stream corresponding to the given output argument.
+     * null if the output file cannot be created or accessed, or is a incorrect path.
+     */
     private static OutputStream buildOutputStream() {
       if(output == null){
         return System.out;
@@ -90,6 +126,13 @@ public class Excellence {
       }
     }
 
+    /**
+     * Builds an appendable based on the given output argument,
+     * system.out if the argument was not provided.
+     *
+     * @return an appendable corresponding to the given output argument.
+     * null if the output file cannot be created or accessed, or is an incorrect path.
+     */
     private static Appendable buildAppendable() {
       if(output == null){
         return System.out;
@@ -99,6 +142,12 @@ public class Excellence {
       return null;
     }
 
+    /**
+     * Builds a view based on the given view and speed.
+     *
+     * @param viewType - the string representing the type of view in the command line
+     * arguments.
+     */
     private static void buildView(String viewType){
       switch (viewType){
         case "svg":
