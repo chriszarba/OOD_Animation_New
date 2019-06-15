@@ -40,16 +40,14 @@ public class OurMotion implements IMotion {
       double initialWidth, double initialHeight, double finalWidth, double finalHeight,
       Color initialColor,
       Color finalColor) throws IllegalArgumentException {
-    if (startTick < 0 || endTick <= startTick) {
+    if (startTick < 0 || endTick < startTick) {
       throw new IllegalArgumentException("invalid time range");
     }
     if (initialWidth < 0 || initialHeight < 0 || finalWidth < 0 || finalHeight < 0) {
       throw new IllegalArgumentException("invalid dimension");
     }
-    if (initialPos == null || finalPos == null | initialPos.getX() < 0 || initialPos.getY() < 0
-        || finalPos.getX() < 0
-        || finalPos.getY() < 0) {
-      throw new IllegalArgumentException("invalid position");
+    if (initialPos == null || finalPos == null){
+      throw new IllegalArgumentException("null position");
     }
     if (initialColor == null || finalColor == null) {
       throw new IllegalArgumentException("null color");

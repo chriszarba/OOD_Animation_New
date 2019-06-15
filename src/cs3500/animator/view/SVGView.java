@@ -36,9 +36,12 @@ public class SVGView implements IView {
    * @param stream - the stream to write the svg file to.
    * @param ticksPerSecond - the speed of the animation.
    */
-  public SVGView(OutputStream stream, int ticksPerSecond) {
+  public SVGView(OutputStream stream, int ticksPerSecond) throws IllegalArgumentException {
     if (stream == null) {
       throw new IllegalArgumentException("null stream");
+    }
+    if(ticksPerSecond <= 0){
+      throw new IllegalArgumentException("invalid speed");
     }
     try {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -261,7 +264,7 @@ public class SVGView implements IView {
     animateEl.setAttribute("dur", dur);
     //animateEl.setAttribute("repeatCount", "never");
     animateEl.setAttribute("begin", begin);
-    animateEl.setAttribute("fill", "freeze");
+    animateEl.setAttribute("fill", "remove");
 
     return animateEl;
   }
@@ -304,9 +307,9 @@ public class SVGView implements IView {
    * @return - the given interval represented in a string in seconds,
    * based on the speed of the animation.
    */
-  private String getDurationString(int startTick, int endTick) {
-    double durInSec = (endTick - startTick) / this.ticksPerSecond;
-    return String.format("%.0f", durInSec) + "s";
+  private String getDurationString(double startTick, double endTick) {
+    double durInSec = ((endTick - startTick) / this.ticksPerSecond) * 1000;
+    return String.format("%.0f", durInSec) + "ms";
   }
 
   /**

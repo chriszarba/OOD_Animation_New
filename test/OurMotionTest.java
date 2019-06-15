@@ -23,50 +23,55 @@ public class OurMotionTest {
         10, 10, 10, 10, Color.RED, Color.RED);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   /**
-   * Test that the constructor throws an exception if the
+   * Test that the constructor works if the
    * endTick is the same as the startTick.
    */
   public void constructorTest2() {
     IMotion motion = new OurMotion(0, 0, new Point2D.Double(0, 0), new Point2D.Double(0, 0),
         10, 10, 10, 10, Color.RED, Color.RED);
+    assertNotEquals(null, motion);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   /**
-   * Test that the constructor throws an exception if it has a negative starting position.
+   * Test that the constructor works if it has a negative starting position.
    */
   public void constructorTest3() {
     IMotion motion = new OurMotion(0, 10, new Point2D.Double(0, -10), new Point2D.Double(0, 0),
         10, 10, 10, 10, Color.RED, Color.RED);
+    assertNotEquals(null, motion);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   /**
-   * Test that the constructor throws an exception if it has a negative starting position.
+   * Test that the constructor works if it has a negative starting position.
    */
   public void constructorTest4() {
     IMotion motion = new OurMotion(0, 10, new Point2D.Double(-10, 0), new Point2D.Double(0, 0),
         10, 10, 10, 10, Color.RED, Color.RED);
+    assertNotEquals(null, motion);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   /**
-   * Test that the constructor throws an exception if it has a negative ending position.
+   * Test that the constructor works if it has a negative ending position.
    */
   public void constructorTest5() {
     IMotion motion = new OurMotion(0, 10, new Point2D.Double(0, 0), new Point2D.Double(-5, 0),
         10, 10, 10, 10, Color.RED, Color.RED);
+    assertNotEquals(null, motion);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   /**
-   * Test that the constructor throws an exception if it has a negative ending position.
+   * Test that the constructor works if it has a negative ending position.
    */
   public void constructorTest6() {
     IMotion motion = new OurMotion(0, 10, new Point2D.Double(0, 0), new Point2D.Double(0, -6),
         10, 10, 10, 10, Color.RED, Color.RED);
+    assertNotEquals(null, motion);
   }
 
   @Test(expected = IllegalArgumentException.class)

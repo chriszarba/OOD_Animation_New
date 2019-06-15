@@ -3,7 +3,6 @@ package cs3500.animator.model;
 import cs3500.animator.util.AnimationBuilder;
 import java.awt.Color;
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -39,31 +38,29 @@ public class OurModel implements IModel {
     @Override
     public IModel build() {
       IModel model = new OurModel();
-      if (this.shapes == null || motionMap == null) {
-        System.out.println("Null shape/motion map in builder");
-        return null;
-      }
-      // add shapes
-      for (String name : this.shapes.keySet()) {
-        IMotion motion = this.getStartMotion(name);
-        if(motion == null){
-          System.out.println("No Motions");
+      if (this.shapes != null || motionMap != null) {
+        // add shapes
+        for (String name : this.shapes.keySet()) {
+          IMotion motion = this.getStartMotion(name);
+          if(motion == null){
+            System.out.println("No Motions");
+          }
+          if (!model
+              .addShape(name, this.shapeStringToType(this.shapes.get(name)), motion.getInitialPos(),
+                  motion.getInitialWidth(), motion.getInitialHeight(), motion.getInitialColor())) {
+            //System.out.println("Not Inserted");
+            return null;
+          }
         }
-        if (!model
-            .addShape(name, this.shapeStringToType(this.shapes.get(name)), motion.getInitialPos(),
-                motion.getInitialWidth(), motion.getInitialHeight(), motion.getInitialColor())) {
-          //System.out.println("Not Inserted");
-          return null;
-        }
-      }
 
-      // add motions
-      for (Map.Entry<String, List<IMotion>> entry : this.motionMap.entrySet()) {
-        for (IMotion motion : entry.getValue()) {
-          model.addMotion(entry.getKey(), motion.getStartTick(), motion.getEndTick(),
-              motion.getInitialPos(), motion.getFinalPos(), motion.getInitialWidth(),
-              motion.getInitialHeight(), motion.getFinalWidth(), motion.getFinalHeight(),
-              motion.getInitialColor(), motion.getFinalColor());
+        // add motions
+        for (Map.Entry<String, List<IMotion>> entry : this.motionMap.entrySet()) {
+          for (IMotion motion : entry.getValue()) {
+            model.addMotion(entry.getKey(), motion.getStartTick(), motion.getEndTick(),
+                motion.getInitialPos(), motion.getFinalPos(), motion.getInitialWidth(),
+                motion.getInitialHeight(), motion.getFinalWidth(), motion.getFinalHeight(),
+                motion.getInitialColor(), motion.getFinalColor());
+          }
         }
       }
 
@@ -222,22 +219,30 @@ public class OurModel implements IModel {
 
   @Override
   public void setCanvasWidth(int width) {
-    this.canvasWidth = width;
+    if(width > 0){
+      this.canvasWidth = width;
+    }
   }
 
   @Override
   public void setCanvasHeight(int height) {
-    this.canvasHeight = height;
+    if(height > 0){
+      this.canvasHeight = height;
+    }
   }
 
   @Override
   public void setBoundingX(int x) {
-    this.boundingX = x;
+    if(x >= 0){
+      this.boundingX = x;
+    }
   }
 
   @Override
   public void setBoundingY(int y) {
-    this.boundingY = y;
+    if(y >= 0){
+      this.boundingY = y;
+    }
   }
 
   /**
@@ -435,7 +440,11 @@ public class OurModel implements IModel {
   @Override
   public List<IMotion> getShapeMotions(String name) {
     List<IMotion> copy = new ArrayList<>();
-    for (IMotion motion : this.motionsMap.get(name)) {
+    List<IMotion> shapeMotions = this.motionsMap.get(name);
+    if(shapeMotions == null){
+      return copy;
+    }
+    for (IMotion motion : shapeMotions) {
       // IMotions are immutable
       copy.add(motion);
     }

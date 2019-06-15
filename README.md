@@ -73,3 +73,8 @@ In OurModel:
            Color tweenColor(Color start, Color end, int startTick, int endTick, int tick),
            and added functionality for List<IReadOnlyShape> animate(int tick).
            Implemented new getters/setters for bounds from interface
+           Allow negative positions
+In OurMotion:
+    Allow negative positions
+In AbstractShape:
+    Allow negative positions

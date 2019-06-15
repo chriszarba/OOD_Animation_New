@@ -1,38 +1,48 @@
-import static org.junit.Assert.assertEquals;
+import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import cs3500.animator.controller.IController;
+import cs3500.animator.controller.OurController;
 import cs3500.animator.model.IModel;
 import cs3500.animator.model.OurModel;
 import cs3500.animator.util.AnimationReader;
-import cs3500.animator.view.IView;
 import cs3500.animator.view.TextView;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import org.junit.Test;
 
 /**
- * Test public methods of {@link TextView}.
+ * Test public methods of {@link OurController}.
  */
-public class TextViewTest {
+public class OurControllerTest {
 
   @Test(expected = IllegalArgumentException.class)
-  /** Test constructor throws exception with null appendable */
+  /**
+   * Ensure constructor throws exception on null view
+   */
   public void constructorTest1() {
-    IView view = new TextView(null);
+    IController controller = new OurController(null, new OurModel());
   }
 
-  @Test
-  /** Test constructor succeeds with valid appendable */
+  @Test(expected = IllegalArgumentException.class)
+  /**
+   * Ensure constructor throws exception on null model
+   */
   public void constructorTest2() {
-    IView view = new TextView(System.out);
-    assertNotEquals(null, view);
+    IController controller = new OurController(new TextView(System.out), null);
   }
 
   @Test
-  /** Test render works */
-  public void renderTest1() {
+  /** Ensure constructor succeeds with valid arguments */
+  public void constructorTest3() {
+    IController controller = new OurController(new TextView(System.out), new OurModel());
+    assertNotEquals(null, controller);
+  }
+
+  @Test
+  /** Ensure run causes the animation to render */
+  public void runTest() {
     StringBuilder builder = new StringBuilder();
-    IView view = new TextView(builder);
     String expected = "canvas 200 70  360  360\n"
         + "shape R rectangle\n"
         + "motion R 1   200 200 50  100 255 0   0      10  200 200 50  100 255 0   0\n"
@@ -51,12 +61,14 @@ public class TextViewTest {
     try {
       Readable input = new FileReader("./test/TestInputs/smalldemo.txt");
       IModel model = AnimationReader.parseFile(input, new OurModel.Builder());
-      view.render(model);
+      IController controller = new OurController(new TextView(builder), model);
+      controller.run();
       assertEquals(expected, builder.toString());
     } catch(FileNotFoundException e){
       e.printStackTrace();
       assert(false);
     }
+    assert(!builder.toString().isEmpty());
   }
 
 }
