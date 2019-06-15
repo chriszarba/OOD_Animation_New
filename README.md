@@ -54,10 +54,14 @@ In OurView:
     Added getAllShapes() (from interface)
     Removed getTypeString();
 
+In IModel interface:
+    Added setters for Bounding x and y, and for Canvas Width/Height
+
 In IReadOnlyModel interface:
     Removed getDescription() (moved to view);
     Added getShapeMotions(String name) - get motions associated with a shape
     Added getAllShapes()
+    Added getters for Bounding x and y, and for Canvas Width/Height
 
 In IReadOnlyShape:
     Added String getName(), added field to AbstractShape and subclasses
@@ -68,3 +72,4 @@ In OurModel:
            double tween(double start, double end, double startTick, double endTick, double tick),
            Color tweenColor(Color start, Color end, int startTick, int endTick, int tick),
            and added functionality for List<IReadOnlyShape> animate(int tick).
+           Implemented new getters/setters for bounds from interface

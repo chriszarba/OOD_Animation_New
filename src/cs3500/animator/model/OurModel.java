@@ -18,11 +18,23 @@ public class OurModel implements IModel {
 
   protected Map<String, IShape> shapesMap;
   protected Map<String, List<IMotion>> motionsMap;
+  protected int canvasWidth;
+  protected int canvasHeight;
+  protected int boundingX;
+  protected int boundingY;
 
+  /**
+   * The builder class needed to allow {@link cs3500.animator.util.AnimationReader}
+   * to build a model from a input file.
+   */
   public static final class Builder implements AnimationBuilder<IModel> {
 
     private Map<String, String> shapes;
     private Map<String, List<IMotion>> motionMap;
+    private int canvasWidth;
+    private int canvasHeight;
+    private int boundingX;
+    private int boundingY;
 
     @Override
     public IModel build() {
@@ -40,8 +52,8 @@ public class OurModel implements IModel {
         if (!model
             .addShape(name, this.shapeStringToType(this.shapes.get(name)), motion.getInitialPos(),
                 motion.getInitialWidth(), motion.getInitialHeight(), motion.getInitialColor())) {
-          System.out.println("Not Inserted");
-          // TODO
+          //System.out.println("Not Inserted");
+          return null;
         }
       }
 
@@ -55,9 +67,20 @@ public class OurModel implements IModel {
         }
       }
 
+      model.setBoundingX(this.boundingX);
+      model.setBoundingY(this.boundingY);
+      model.setCanvasHeight(this.canvasHeight);
+      model.setCanvasWidth(this.canvasWidth);
+
       return model;
     }
 
+    /**
+     * Gets the motion with the lowest starting tick associated with a shape.
+     *
+     * @param shapeName - the name of the shape.
+     * @return - the motion with the lowest starting tick associated with the given shape.
+     */
     private IMotion getStartMotion(String shapeName) {
       if (this.motionMap.get(shapeName).isEmpty()) {
         return null;
@@ -73,19 +96,30 @@ public class OurModel implements IModel {
       return min;
     }
 
+    /**
+     * Small helper to turn a shape string description to the appropriate enum.
+     *
+     * @param type - a string describing a certain shape.
+     * @return - the enum that represents the same shape as the given shape. null
+     * if the shape is not supported.
+     */
     private ShapeType shapeStringToType(String type) {
       switch (type) {
         case "ellipse":
           return ShapeType.ELLIPSE;
         case "rectangle":
           return ShapeType.RECTANGLE;
+        default:
+          return null;
       }
-      // TODO
-      return null;
     }
 
     @Override
     public AnimationBuilder<IModel> setBounds(int x, int y, int width, int height) {
+      this.boundingX = x;
+      this.boundingY = y;
+      this.canvasWidth = width;
+      this.canvasHeight = height;
       return this;
     }
 
@@ -109,8 +143,7 @@ public class OurModel implements IModel {
       }
       this.motionMap.get(name).add(
           new OurMotion(t1, t2, new Point2D.Double(x1, y1), new Point2D.Double(x2, y2), w1, h1, w2,
-              h2,
-              new Color(r1, g1, b1), new Color(r2, g2, b2)));
+              h2, new Color(r1, g1, b1), new Color(r2, g2, b2)));
       return this;
     }
 
@@ -127,6 +160,10 @@ public class OurModel implements IModel {
   public OurModel() {
     shapesMap = new LinkedHashMap<>();
     motionsMap = new LinkedHashMap<>();
+    this.canvasWidth = 1000;
+    this.canvasHeight = 1000;
+    this.boundingX = Integer.MAX_VALUE;
+    this.boundingY = Integer.MAX_VALUE;
   }
 
   @Override
@@ -183,6 +220,26 @@ public class OurModel implements IModel {
     }
   }
 
+  @Override
+  public void setCanvasWidth(int width) {
+    this.canvasWidth = width;
+  }
+
+  @Override
+  public void setCanvasHeight(int height) {
+    this.canvasHeight = height;
+  }
+
+  @Override
+  public void setBoundingX(int x) {
+    this.boundingX = x;
+  }
+
+  @Override
+  public void setBoundingY(int y) {
+    this.boundingY = y;
+  }
+
   /**
    * Adds the motion to the motion map, ensuring it does not overlap with any of the other motions
    * associated with the same shape. Keeps the lists of motions associated with each shape sorted
@@ -196,9 +253,10 @@ public class OurModel implements IModel {
     // if there is no entry for this name, add one
     if (!this.motionsMap.containsKey(name)) {
       this.motionsMap.put(name, new ArrayList<>());
+      this.motionsMap.get(name).add(motion);
+      return true;
     }
 
-    // TODO: no gaps between motions
     // insertion sort
     boolean insert = false;
     int index = 0;
@@ -214,10 +272,7 @@ public class OurModel implements IModel {
             .getStartTick()) {
           // ensure if the endTick is the same as this startTick the parameters are the same
           IMotion otherMotion = this.motionsMap.get(name).get(index - 1);
-          if (!motion.getInitialPos().equals(otherMotion.getFinalPos())
-              || motion.getInitialWidth() != otherMotion.getFinalWidth()
-              || motion.getInitialHeight() != otherMotion.getFinalHeight() || !motion
-              .getInitialColor().equals(otherMotion.getFinalColor())) {
+          if(this.endStartLineUp(otherMotion, motion)){
             return false;
           }
         }
@@ -228,10 +283,33 @@ public class OurModel implements IModel {
 
     if (insert) {
       this.motionsMap.get(name).add(index, motion);
-    } else {
-      this.motionsMap.get(name).add(motion);
+    } else if(motion.getStartTick() == this.motionsMap.get(name).get(this.motionsMap.get(name).size()-1).getEndTick()){
+      IMotion otherMotion = this.motionsMap.get(name).get(this.motionsMap.get(name).size()-1);
+      if(this.endStartLineUp(otherMotion, motion)) {
+        this.motionsMap.get(name).add(motion);
+        return true;
+      }
+      return false;
     }
     return true;
+  }
+
+  /**
+   * Helper function that ensures that the end tick and parameters of the first motion
+   * are the same as the starting tick and parameters of the second motion.
+   *
+   * @param first - the motion which comes directly before the second one.
+   * @param second - the motion which comes directly after the first one.
+   * @return - true if the first motion has the same ending tick, position, width, height, and
+   * color as the starting tick, position, width, height, and color as the second one.
+   * false otherwise.
+   */
+  private boolean endStartLineUp(IMotion first, IMotion second){
+    return first.getEndTick() == second.getStartTick()
+        && Math.abs(first.getFinalWidth() - second.getInitialWidth()) < 0.01
+        && Math.abs(first.getFinalHeight() - second.getInitialHeight()) < 0.01
+        && first.getFinalPos().equals(second.getInitialPos())
+        && first.getFinalColor().equals(second.getInitialColor());
   }
 
   @Override
@@ -247,7 +325,14 @@ public class OurModel implements IModel {
     return shapes;
   }
 
-  // given a shape and tick, returns the corresponding motion object
+  /**
+   * Given a shape and tick, responds the corresponding motion object.
+   *
+   * @param shape the shape whose associated motions need to be searched
+   * @param tick - the tick to get the motion at.
+   * @return the motion applying to the given shape at the given tick. null
+   * if no such motion exists.
+   */
   private IMotion getMotionAtTick(IReadOnlyShape shape, int tick) {
     List<IMotion> motions = this.getShapeMotions(shape.getName());
     for (IMotion m : motions) {
@@ -258,7 +343,15 @@ public class OurModel implements IModel {
     return null;
   }
 
-  // Given a shape and a tick, calculates what the shape will be at that tick and returns it
+
+  /**
+   * Given a shape and a tick, calculates what the shape will be at that tick and returns it.
+   *
+   * @param shape - the shape to calculate the given shape at a given tick at.
+   * @param tick - the tick to caculate the given shape at.
+   * @return The given shape at the given tick. null if the shape has no associated motions at this
+   * tick.
+   */
   private IReadOnlyShape getShapeAtTick(IReadOnlyShape shape, int tick) {
     IMotion motion = this.getMotionAtTick(shape, tick);
     if (motion == null) {
@@ -288,7 +381,17 @@ public class OurModel implements IModel {
     return null;
   }
 
-  // tweening function to get the "inbetweens" in the animation
+
+  /**
+   * tweening function to get the "inbetweens" in the animation
+   *
+   * @param start - the start value.
+   * @param end - the end value.
+   * @param startTick - the start tick.
+   * @param endTick - the end tick.
+   * @param tick - the current tick.
+   * @return the value at the given tick between the start and end values.
+   */
   private double tween(double start, double end, double startTick, double endTick, double tick) {
     if(Math.abs(start - end) > 0.001){
       return start;
@@ -298,7 +401,17 @@ public class OurModel implements IModel {
     return endResult;
   }
 
-  // tweening function for colors
+
+  /**
+   * tweening function for colors
+   *
+   * @param start - the starting color.
+   * @param end - the ending color.
+   * @param startTick - the start tick.
+   * @param endTick - the end tick.
+   * @param tick - the current tick.
+   * @return - the color at the appropriate sate of transition at the current tick.
+   */
   private Color tweenColor(Color start, Color end, int startTick, int endTick, int tick) {
     if(start.equals(end)){
       return start;
@@ -337,6 +450,26 @@ public class OurModel implements IModel {
       copy.add(shape);
     }
     return copy;
+  }
+
+  @Override
+  public int getCanvasWidth() {
+    return this.canvasWidth;
+  }
+
+  @Override
+  public int getCanvasHeight() {
+    return this.canvasHeight;
+  }
+
+  @Override
+  public int getBoundingX() {
+    return this.boundingX;
+  }
+
+  @Override
+  public int getBoundingY() {
+    return this.boundingY;
   }
 
 }

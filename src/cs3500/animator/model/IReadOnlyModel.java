@@ -38,7 +38,45 @@ public interface IReadOnlyModel {
    */
   //String getDescription();
 
+  /**
+   * Get all the motions in a model associated with a shape.
+   *
+   * @param name - the name of the shape.
+   * @return - All motions associated with the given shape.
+   */
   List<IMotion> getShapeMotions(String name);
 
+  /**
+   * Get a list of all the shapes currently declared in the model.
+   *
+   * @return - a list of all shapes declared in the model.
+   */
   List<IReadOnlyShape> getAllShapes();
+
+  /**
+   * Get the width of the canvas.
+   *
+   * @return - the width of the canvas.
+   */
+  int getCanvasWidth();
+
+  /**
+   * Get the height of the canvas.
+   * @return - the height of the canvas.
+   */
+  int getCanvasHeight();
+
+  /**
+   * Get the leftmost X value.
+   *
+   * @return - the bounding leftmost X value.
+   */
+  int getBoundingX();
+
+  /**
+   * Get the topmost Y value.
+   *
+   * @return - the bounding topmost Y value.
+   */
+  int getBoundingY();
 }

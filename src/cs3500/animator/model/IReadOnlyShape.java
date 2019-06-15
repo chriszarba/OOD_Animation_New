@@ -57,5 +57,10 @@ public interface IReadOnlyShape {
    */
   ShapeType getShapeType();
 
+  /**
+   * Get the name of the shape.
+   *
+   * @return - the name of the shape.
+   */
   String getName();
 }

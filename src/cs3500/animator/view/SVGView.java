@@ -20,12 +20,22 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * An implementation of {@link IView} that creates a SVG file
+ * based on the given animation.
+ */
 public class SVGView implements IView {
 
   private DocumentBuilder builder;
   private OutputStream stream;
   private int ticksPerSecond;
 
+  /**
+   * Constructs an svg view.
+   *
+   * @param stream - the stream to write the svg file to.
+   * @param ticksPerSecond - the speed of the animation.
+   */
   public SVGView(OutputStream stream, int ticksPerSecond) {
     if (stream == null) {
       throw new IllegalArgumentException("null stream");
@@ -35,7 +45,7 @@ public class SVGView implements IView {
       factory.setNamespaceAware(true);
       this.builder = factory.newDocumentBuilder();
     } catch (ParserConfigurationException e) {
-      // TODO
+      throw new IllegalStateException("DocumentBuilderFactory Failed to build Document");
     }
     this.stream = stream;
     this.ticksPerSecond = ticksPerSecond;
@@ -50,8 +60,8 @@ public class SVGView implements IView {
     Document dom = this.builder.newDocument();
     Element rootEl = dom.createElement("svg");
     rootEl.setAttribute("version", "1.1");
-    //rootEl.setAttribute("width", "500"); // TODO
-    //rootEl.setAttribute("height", "500"); // TODO
+    rootEl.setAttribute("width", Integer.toString(model.getCanvasWidth()));
+    rootEl.setAttribute("height", Integer.toString(model.getCanvasHeight()));
     rootEl.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     rootEl.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
 
@@ -71,12 +81,20 @@ public class SVGView implements IView {
       tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
       tr.transform(new DOMSource(dom), new StreamResult(this.stream));
     } catch (TransformerConfigurationException e) {
-      // TODO
+      throw new IllegalStateException("Transformer Factory failed to build Transformer");
     } catch (TransformerException e) {
-      // TODO
+      throw new IllegalStateException("Transformer failed to transform");
     }
   }
 
+  /**
+   * Creates a svg shape element.
+   *
+   * @param shape - the shape to create the svg shape from..
+   * @param motions - the list of motions associated with the given shape.
+   * @param dom - the document containing the svg information.
+   * @return - A element corresponding to the given shape and motions.
+   */
   private Element createShapeElement(IReadOnlyShape shape, List<IMotion> motions, Document dom) {
     Element shapeEl = dom.createElement(this.typeToTag(shape.getShapeType()));
 
@@ -95,7 +113,7 @@ public class SVGView implements IView {
         shapeEl.setAttribute("cy", this.doubleToIntString(shape.getY() + (shape.getHeight() / 2)));
         break;
       default:
-        // TODO
+        // This should be impossible
     }
     shapeEl.setAttribute("fill", this.colorToRGBString(shape.getColor()));
 
@@ -129,7 +147,7 @@ public class SVGView implements IView {
                 durString, beginString));
             break;
           default:
-            // TODO
+            // This is impossible
         }
         ++count;
         idString = shape.getName() + "_motion" + count;
@@ -152,7 +170,7 @@ public class SVGView implements IView {
                 durString, beginString));
             break;
           default:
-            // TODO
+            // This is impossible
         }
         ++count;
         idString = shape.getName() + "_motion" + count;
@@ -173,7 +191,7 @@ public class SVGView implements IView {
                 this.doubleToIntString(motion.getFinalWidth() / 2), durString, beginString));
             break;
           default:
-            // TODO
+            // This is impossible
         }
         ++count;
         idString = shape.getName() + "_motion" + count;
@@ -194,7 +212,7 @@ public class SVGView implements IView {
                 this.doubleToIntString(motion.getFinalHeight() / 2), durString, beginString));
             break;
           default:
-            // TODO
+            // This is impossible
         }
         ++count;
         idString = shape.getName() + "_motion" + count;
@@ -220,6 +238,18 @@ public class SVGView implements IView {
     return shapeEl;
   }
 
+  /**
+   * Creates an animation element corresponding in the given document.
+   *
+   * @param dom - the document containing the svg information.
+   * @param id - the id of this element.
+   * @param attName - the attribute being modified by the animation.
+   * @param from - the starting value of the attribute being modified.
+   * @param to - the ending value of the attribute being modified.
+   * @param dur - a string representing the duration.
+   * @param begin - the point at which this animation should begin.
+   * @return A animation element corresponding to the given information.
+   */
   private Element createAnimateElement(Document dom, String id, String attName, String from,
       String to, String dur, String begin) {
     Element animateEl = dom.createElement("animate");
@@ -236,14 +266,28 @@ public class SVGView implements IView {
     return animateEl;
   }
 
+
+  /**
+   * Rounds a double to the nearest int and returns it as a string.
+   *
+   * @param d - the double to round and get as a string.
+   * @return A string representation of the given double rounded to the nearest integer.
+   */
   private String doubleToIntString(double d) {
     return Integer.toString(((int) (d + 0.5)));
   }
 
+  /**
+   * Get a rgb string representing the given color.
+   *
+   * @param c - the color to represent as a string.
+   * @return the color represented in a string in the form
+   * "rgb(redValue, greenValue, blueValue)"
+   */
   private String colorToRGBString(Color c) {
     StringBuilder sb = new StringBuilder(30);
 
-    sb.append("rgb( ");
+    sb.append("rgb(");
     sb.append(c.getRed()).append(", ");
     sb.append(c.getGreen()).append(", ");
     sb.append(c.getBlue()).append(")");
@@ -251,11 +295,26 @@ public class SVGView implements IView {
     return sb.toString();
   }
 
+  /**
+   * Converts a tick interval to a string representing the time in
+   * seconds based on the speed of the animation.
+   *
+   * @param startTick - the starting tick of the interval.
+   * @param endTick - the ending tick of the interval.
+   * @return - the given interval represented in a string in seconds,
+   * based on the speed of the animation.
+   */
   private String getDurationString(int startTick, int endTick) {
     double durInSec = (endTick - startTick) / this.ticksPerSecond;
     return String.format("%.0f", durInSec) + "s";
   }
 
+  /**
+   * Changes an enum from the corresponding type to the corresponding svg
+   * tag.
+   * @param type - the type of shape.
+   * @return A string representation of the corresponding svg tag.
+   */
   private String typeToTag(ShapeType type) {
     switch (type) {
       case RECTANGLE:

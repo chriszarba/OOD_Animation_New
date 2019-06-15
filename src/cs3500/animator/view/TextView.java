@@ -6,12 +6,28 @@ import cs3500.animator.model.IReadOnlyShape;
 import cs3500.animator.model.ShapeType;
 import java.io.IOException;
 
+
+/**
+ * Outputs a formatted description of all shapes, and the associated motions. The number values in
+ * order are: starting tick, starting x position, the starting y position, the starting width, the
+ * starting height, the starting red value of the RGB color, the starting green value of the RGB
+ * color, the starting blue value of the RGB color, the ending tick, the ending x position, the
+ * ending y position, the ending width, the ending height, the ending red value of the RGB color,
+ * the ending green value of the RGB color, and the ending blue value of the RGB color. This is
+ * written to the given appendable.
+ */
 public class TextView implements IView {
 
-  private Appendable appendable;
+  private final Appendable appendable;
 
+  /**
+   * Constructs a new TextView.
+   *
+   * @param ap - the appendable to write the output to.
+   * @throws IllegalArgumentException - if the given appendable is null.
+   */
   public TextView(Appendable ap) throws IllegalArgumentException {
-    if(ap == null){
+    if (ap == null) {
       throw new IllegalArgumentException("null appendable");
     }
     this.appendable = ap;
@@ -19,10 +35,15 @@ public class TextView implements IView {
 
   @Override
   public void render(IReadOnlyModel model) throws IllegalArgumentException {
-    if(model == null){
+    if (model == null) {
       throw new IllegalArgumentException("null model");
     }
     StringBuilder builder = new StringBuilder();
+
+    builder.append(String
+        .format("canvas %-3d %-3d %-4d %-4d\n", model.getBoundingX(), model.getBoundingY(),
+            model.getCanvasWidth(), model.getCanvasHeight()));
+
     for (IReadOnlyShape shape : model.getAllShapes()) {
       builder.append("shape ");
       builder.append(shape.getName());
@@ -56,10 +77,10 @@ public class TextView implements IView {
     // remove last newlines
     builder.delete(builder.length() - 3, builder.length());
 
-    try{
+    try {
       this.appendable.append(builder.toString());
-    }catch(IOException e){
-      // TODO
+    } catch (IOException e) {
+      throw new IllegalStateException("Failed to append to appendable");
     }
   }
 

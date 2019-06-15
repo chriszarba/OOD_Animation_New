@@ -52,4 +52,28 @@ public interface IModel extends IReadOnlyModel {
   boolean addMotion(String name, int t0, int t1, Point2D startPos, Point2D endPos,
       double startWidth,
       double startHeight, double endWidth, double endHeight, Color startColor, Color endColor);
+
+  /**
+   * Set the width of the canvas for the animation.
+   * @param width - the width of the canvas.
+   */
+  void setCanvasWidth(int width);
+
+  /**
+   * Set the height of the canvas for the animation.
+   * @param height - the height of the canvas.
+   */
+  void setCanvasHeight(int height);
+
+  /**
+   * Set the leftmost X value for the animation.
+   * @param x - the leftmost x value.
+   */
+  void setBoundingX(int x);
+
+  /**
+   * Set the topmost Y value for the animation.
+   * @param y - the rightmost y value.
+   */
+  void setBoundingY(int y);
 }
