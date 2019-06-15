@@ -393,7 +393,7 @@ public class OurModel implements IModel {
    * @return the value at the given tick between the start and end values.
    */
   private double tween(double start, double end, double startTick, double endTick, double tick) {
-    if(Math.abs(start - end) > 0.001){
+    if(Math.abs(start - end) < 0.001){
       return start;
     }
     double endResult = start * ((endTick - tick) / (endTick - startTick))
