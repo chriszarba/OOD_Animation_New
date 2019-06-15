@@ -10,6 +10,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import org.junit.Test;
 
+/**
+ * Test public methods of {@link TextView}.
+ */
 public class TextViewTest {
 
   @Test(expected = IllegalArgumentException.class)
