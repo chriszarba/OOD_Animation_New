@@ -41,7 +41,7 @@ public class TextView implements IView {
     StringBuilder builder = new StringBuilder();
 
     builder.append(String
-        .format("canvas %-3d %-3d %-4d %-4d\n", model.getBoundingX(), model.getBoundingY(),
+        .format("canvas %-3d %-3d %-4d %d\n", model.getBoundingX(), model.getBoundingY(),
             model.getCanvasWidth(), model.getCanvasHeight()));
 
     for (IReadOnlyShape shape : model.getAllShapes()) {
