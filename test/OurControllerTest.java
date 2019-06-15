@@ -6,12 +6,14 @@ import cs3500.animator.controller.OurController;
 import cs3500.animator.model.IModel;
 import cs3500.animator.model.OurModel;
 import cs3500.animator.util.AnimationReader;
-import cs3500.animator.view.IView;
 import cs3500.animator.view.TextView;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import org.junit.Test;
 
+/**
+ * Test public methods of {@link OurController}.
+ */
 public class OurControllerTest {
 
   @Test(expected = IllegalArgumentException.class)

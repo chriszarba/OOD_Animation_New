@@ -12,6 +12,9 @@ import java.io.FileReader;
 import java.io.OutputStream;
 import org.junit.Test;
 
+/**
+ * Test public methods in {@link SVGView}.
+ */
 public class SVGViewTest {
 
   @Test(expected = IllegalArgumentException.class)
