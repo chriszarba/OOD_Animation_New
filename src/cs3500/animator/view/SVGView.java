@@ -261,7 +261,7 @@ public class SVGView implements IView {
     animateEl.setAttribute("dur", dur);
     //animateEl.setAttribute("repeatCount", "never");
     animateEl.setAttribute("begin", begin);
-    animateEl.setAttribute("fill", "freeze");
+    animateEl.setAttribute("fill", "remove");
 
     return animateEl;
   }

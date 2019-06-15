@@ -222,22 +222,30 @@ public class OurModel implements IModel {
 
   @Override
   public void setCanvasWidth(int width) {
-    this.canvasWidth = width;
+    if(width > 0){
+      this.canvasWidth = width;
+    }
   }
 
   @Override
   public void setCanvasHeight(int height) {
-    this.canvasHeight = height;
+    if(height > 0){
+      this.canvasHeight = height;
+    }
   }
 
   @Override
   public void setBoundingX(int x) {
-    this.boundingX = x;
+    if(x >= 0){
+      this.boundingX = x;
+    }
   }
 
   @Override
   public void setBoundingY(int y) {
-    this.boundingY = y;
+    if(y >= 0){
+      this.boundingY = y;
+    }
   }
 
   /**
@@ -435,7 +443,11 @@ public class OurModel implements IModel {
   @Override
   public List<IMotion> getShapeMotions(String name) {
     List<IMotion> copy = new ArrayList<>();
-    for (IMotion motion : this.motionsMap.get(name)) {
+    List<IMotion> shapeMotions = this.motionsMap.get(name);
+    if(shapeMotions == null){
+      return copy;
+    }
+    for (IMotion motion : shapeMotions) {
       // IMotions are immutable
       copy.add(motion);
     }

@@ -18,7 +18,7 @@ public abstract class AbstractShape implements IShape {
 
   protected AbstractShape(String name, double x, double y, Color color, double width, double height,
       boolean visible) {
-    if (x < 0 || y < 0 || width < 0 || height < 0 || color == null || name == null) {
+    if (width < 0 || height < 0 || color == null || name == null) {
       throw new IllegalArgumentException("Invalid argument(s) to create shape.");
     }
     this.name = name;
