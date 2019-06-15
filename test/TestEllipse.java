@@ -19,6 +19,15 @@ public class TestEllipse {
 
   @Test
   /**
+   * Test that getName() returns the right name.
+   */
+  public void testGetName(){
+    assertEquals("ellipse1", ellipse1.getName());
+    assertEquals("ellipse2", ellipse2.getName());
+  }
+
+  @Test
+  /**
    * Tests that getShapeType returns a ELLIPSE enum for Ellipses.
    */
   public void testGetShapeType() {

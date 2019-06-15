@@ -16,7 +16,15 @@ public class TestRectangle {
 
 
   IShape rect1 = new Rectangle("rectangle", 0, 0, Color.BLACK, 0, 0, true);
-  IShape rect2 = new Rectangle("rectangle", 1, 1, Color.BLUE, 1, 1, false);
+  IShape rect2 = new Rectangle("rectangle2", 1, 1, Color.BLUE, 1, 1, false);
+  @Test
+  /**
+   * Test that getName() returns the right name.
+   */
+  public void testGetName(){
+    assertEquals("rectangle", rect1.getName());
+    assertEquals("rectangle2", rect2.getName());
+  }
 
   @Test(expected = IllegalArgumentException.class)
   /**
