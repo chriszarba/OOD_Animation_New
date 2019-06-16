@@ -21,8 +21,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * An implementation of {@link IView} that creates a SVG file
- * based on the given animation.
+ * An implementation of {@link IView} that creates a SVG file based on the given animation.
  */
 public class SVGView implements IView {
 
@@ -40,7 +39,7 @@ public class SVGView implements IView {
     if (stream == null) {
       throw new IllegalArgumentException("null stream");
     }
-    if(ticksPerSecond <= 0){
+    if (ticksPerSecond <= 0) {
       throw new IllegalArgumentException("invalid speed");
     }
     try {
@@ -264,7 +263,7 @@ public class SVGView implements IView {
     animateEl.setAttribute("dur", dur);
     //animateEl.setAttribute("repeatCount", "never");
     animateEl.setAttribute("begin", begin);
-    animateEl.setAttribute("fill", "remove");
+    animateEl.setAttribute("fill", "freeze");
 
     return animateEl;
   }
@@ -284,8 +283,7 @@ public class SVGView implements IView {
    * Get a rgb string representing the given color.
    *
    * @param c - the color to represent as a string.
-   * @return the color represented in a string in the form
-   * "rgb(redValue, greenValue, blueValue)"
+   * @return the color represented in a string in the form "rgb(redValue, greenValue, blueValue)"
    */
   private String colorToRGBString(Color c) {
     StringBuilder sb = new StringBuilder(30);
@@ -299,13 +297,13 @@ public class SVGView implements IView {
   }
 
   /**
-   * Converts a tick interval to a string representing the time in
-   * seconds based on the speed of the animation.
+   * Converts a tick interval to a string representing the time in seconds based on the speed of the
+   * animation.
    *
    * @param startTick - the starting tick of the interval.
    * @param endTick - the ending tick of the interval.
-   * @return - the given interval represented in a string in seconds,
-   * based on the speed of the animation.
+   * @return - the given interval represented in a string in seconds, based on the speed of the
+   *     animation.
    */
   private String getDurationString(double startTick, double endTick) {
     double durInSec = ((endTick - startTick) / this.ticksPerSecond) * 1000;
@@ -313,8 +311,8 @@ public class SVGView implements IView {
   }
 
   /**
-   * Changes an enum from the corresponding type to the corresponding svg
-   * tag.
+   * Changes an enum from the corresponding type to the corresponding svg tag.
+   *
    * @param type - the type of shape.
    * @return A string representation of the corresponding svg tag.
    */

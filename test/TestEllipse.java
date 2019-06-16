@@ -21,7 +21,7 @@ public class TestEllipse {
   /**
    * Test that getName() returns the right name.
    */
-  public void testGetName(){
+  public void testGetName() {
     assertEquals("ellipse1", ellipse1.getName());
     assertEquals("ellipse2", ellipse2.getName());
   }
@@ -53,7 +53,7 @@ public class TestEllipse {
    */
 
   public void testNegativePos() {
-    IShape ellipse3 = new Ellipse("ellipse3",new Point2D.Double(-1, -5), Color.BLACK, 0, 0, true);
+    IShape ellipse3 = new Ellipse("ellipse3", new Point2D.Double(-1, -5), Color.BLACK, 0, 0, true);
   }
 
 

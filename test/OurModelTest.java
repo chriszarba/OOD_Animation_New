@@ -412,59 +412,63 @@ public class OurModelTest {
     assertEquals(0, model.getShapeMotions("bad_name").size());
   }
 
-  /** Test public methods of {@link OurModel.Builder}. */
-    @Test
-    /** Test constructor suceeds */
-    public void constructorTest1() {
-      AnimationBuilder builder = new OurModel.Builder();
-      assertNotEquals(null, builder);
-    }
+  /**
+   * Test public methods of {@link OurModel.Builder}.
+   */
+  @Test
+  /** Test constructor suceeds */
+  public void constructorTest1() {
+    AnimationBuilder builder = new OurModel.Builder();
+    assertNotEquals(null, builder);
+  }
 
-    @Test
-    /** Test setBounds sets the bounds in the constructed model properly */
-    public void setBoundsTest1() {
-      AnimationBuilder<IModel> builder = new OurModel.Builder();
-      builder.setBounds(10, 15, 400, 500);
-      IModel model = builder.build();
-      assertNotEquals(null, model);
-      assertEquals(10, model.getBoundingX());
-      assertEquals(15, model.getBoundingY());
-      assertEquals(400, model.getCanvasWidth());
-      assertEquals(500, model.getCanvasHeight());
-    }
+  @Test
+  /** Test setBounds sets the bounds in the constructed model properly */
+  public void setBoundsTest1() {
+    AnimationBuilder<IModel> builder = new OurModel.Builder();
+    builder.setBounds(10, 15, 400, 500);
+    IModel model = builder.build();
+    assertNotEquals(null, model);
+    assertEquals(10, model.getBoundingX());
+    assertEquals(15, model.getBoundingY());
+    assertEquals(400, model.getCanvasWidth());
+    assertEquals(500, model.getCanvasHeight());
+  }
 
-    @Test
-    /** Test adding a shape and motion (and you must add at least 1 motion per shape) succeeds in
-     * creating a model with said shape and motion */
-    public void declareShapeAddMotionTest1(){
-      AnimationBuilder<IModel> builder = new OurModel.Builder();
-      builder.declareShape("R", "rectangle");
-      builder.addMotion("R", 0, 5, 10, 100, 200, 255, 0, 0, 10, 10, 15, 150, 250, 0, 0, 255);
-      IModel model = builder.build();
-      assertNotEquals(null, model);
-      IShape expectedShape = new Rectangle("R", new Point2D.Double(5, 10), new Color(255, 0, 0), 100, 200, true);
-      IReadOnlyShape actualShape = model.getAllShapes().get(0);
-      assertEquals(expectedShape.getShapeType(), actualShape.getShapeType());
-      assertEquals(expectedShape.getName(), actualShape.getName());
-      assertEquals(expectedShape.getX(), actualShape.getX(), 0.01);
-      assertEquals(expectedShape.getY(), actualShape.getY(), 0.01);
-      assertEquals(expectedShape.getColor(), actualShape.getColor());
-      assertEquals(expectedShape.getWidth(), actualShape.getWidth(), 0.01);
-      assertEquals(expectedShape.getHeight(), actualShape.getHeight(), 0.01);
-      assertEquals(expectedShape.getVisible(), actualShape.getVisible());
+  @Test
+  /** Test adding a shape and motion (and you must add at least 1 motion per shape) succeeds in
+   * creating a model with said shape and motion */
+  public void declareShapeAddMotionTest1() {
+    AnimationBuilder<IModel> builder = new OurModel.Builder();
+    builder.declareShape("R", "rectangle");
+    builder.addMotion("R", 0, 5, 10, 100, 200, 255, 0, 0, 10, 10, 15, 150, 250, 0, 0, 255);
+    IModel model = builder.build();
+    assertNotEquals(null, model);
+    IShape expectedShape = new Rectangle("R", new Point2D.Double(5, 10), new Color(255, 0, 0), 100,
+        200, true);
+    IReadOnlyShape actualShape = model.getAllShapes().get(0);
+    assertEquals(expectedShape.getShapeType(), actualShape.getShapeType());
+    assertEquals(expectedShape.getName(), actualShape.getName());
+    assertEquals(expectedShape.getX(), actualShape.getX(), 0.01);
+    assertEquals(expectedShape.getY(), actualShape.getY(), 0.01);
+    assertEquals(expectedShape.getColor(), actualShape.getColor());
+    assertEquals(expectedShape.getWidth(), actualShape.getWidth(), 0.01);
+    assertEquals(expectedShape.getHeight(), actualShape.getHeight(), 0.01);
+    assertEquals(expectedShape.getVisible(), actualShape.getVisible());
 
-      IMotion expectedMotion = new OurMotion(0, 10, new Point2D.Double(5, 10), new Point2D.Double(10, 15), 100, 200, 150, 250, new Color(255, 0, 0), new Color(0, 0, 255));
-      IMotion actualMotion = model.getShapeMotions("R").get(0);
-      assertEquals(expectedMotion.getStartTick(), actualMotion.getStartTick());
-      assertEquals(expectedMotion.getEndTick(), actualMotion.getEndTick());
-      assertEquals(expectedMotion.getInitialPos(), actualMotion.getInitialPos());
-      assertEquals(expectedMotion.getInitialColor(), actualMotion.getInitialColor());
-      assertEquals(expectedMotion.getInitialWidth(), actualMotion.getInitialWidth(), 0.01);
-      assertEquals(expectedMotion.getInitialHeight(), actualMotion.getInitialHeight(), 0.01);
-      assertEquals(expectedMotion.getFinalPos(), actualMotion.getFinalPos());
-      assertEquals(expectedMotion.getFinalColor(), actualMotion.getFinalColor());
-      assertEquals(expectedMotion.getFinalWidth(), actualMotion.getFinalWidth(), 0.01);
-      assertEquals(expectedMotion.getFinalHeight(), actualMotion.getFinalHeight(), 0.01);
-    }
+    IMotion expectedMotion = new OurMotion(0, 10, new Point2D.Double(5, 10),
+        new Point2D.Double(10, 15), 100, 200, 150, 250, new Color(255, 0, 0), new Color(0, 0, 255));
+    IMotion actualMotion = model.getShapeMotions("R").get(0);
+    assertEquals(expectedMotion.getStartTick(), actualMotion.getStartTick());
+    assertEquals(expectedMotion.getEndTick(), actualMotion.getEndTick());
+    assertEquals(expectedMotion.getInitialPos(), actualMotion.getInitialPos());
+    assertEquals(expectedMotion.getInitialColor(), actualMotion.getInitialColor());
+    assertEquals(expectedMotion.getInitialWidth(), actualMotion.getInitialWidth(), 0.01);
+    assertEquals(expectedMotion.getInitialHeight(), actualMotion.getInitialHeight(), 0.01);
+    assertEquals(expectedMotion.getFinalPos(), actualMotion.getFinalPos());
+    assertEquals(expectedMotion.getFinalColor(), actualMotion.getFinalColor());
+    assertEquals(expectedMotion.getFinalWidth(), actualMotion.getFinalWidth(), 0.01);
+    assertEquals(expectedMotion.getFinalHeight(), actualMotion.getFinalHeight(), 0.01);
+  }
 
 }

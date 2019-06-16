@@ -9,6 +9,8 @@ import cs3500.animator.util.AnimationReader;
 import cs3500.animator.view.TextView;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import org.junit.Test;
 
 /**
@@ -29,21 +31,23 @@ public class OurControllerTest {
    * Ensure constructor throws exception on null model
    */
   public void constructorTest2() {
-    IController controller = new OurController(new TextView(System.out), null);
+    IController controller = new OurController(new TextView(new PrintWriter(System.out)), null);
   }
 
   @Test
   /** Ensure constructor succeeds with valid arguments */
   public void constructorTest3() {
-    IController controller = new OurController(new TextView(System.out), new OurModel());
+    IController controller = new OurController(new TextView(new PrintWriter(System.out)),
+        new OurModel());
     assertNotEquals(null, controller);
   }
 
   @Test
   /** Ensure run causes the animation to render */
   public void runTest() {
-    StringBuilder builder = new StringBuilder();
+    StringWriter writer = new StringWriter();
     String expected = "canvas 200 70  360  360\n"
+        + "\n"
         + "shape R rectangle\n"
         + "motion R 1   200 200 50  100 255 0   0      10  200 200 50  100 255 0   0\n"
         + "motion R 10  200 200 50  100 255 0   0      50  300 300 50  100 255 0   0\n"
@@ -61,14 +65,14 @@ public class OurControllerTest {
     try {
       Readable input = new FileReader("./test/TestInputs/smalldemo.txt");
       IModel model = AnimationReader.parseFile(input, new OurModel.Builder());
-      IController controller = new OurController(new TextView(builder), model);
+      IController controller = new OurController(new TextView(writer), model);
       controller.run();
-      assertEquals(expected, builder.toString());
-    } catch(FileNotFoundException e){
+      assertEquals(expected, writer.toString());
+    } catch (FileNotFoundException e) {
       e.printStackTrace();
-      assert(false);
+      assert (false);
     }
-    assert(!builder.toString().isEmpty());
+    assert (!writer.toString().isEmpty());
   }
 
 }

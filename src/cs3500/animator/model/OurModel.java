@@ -23,8 +23,8 @@ public class OurModel implements IModel {
   protected int boundingY;
 
   /**
-   * The builder class needed to allow {@link cs3500.animator.util.AnimationReader}
-   * to build a model from a input file.
+   * The builder class needed to allow {@link cs3500.animator.util.AnimationReader} to build a model
+   * from a input file.
    */
   public static final class Builder implements AnimationBuilder<IModel> {
 
@@ -42,7 +42,7 @@ public class OurModel implements IModel {
         // add shapes
         for (String name : this.shapes.keySet()) {
           IMotion motion = this.getStartMotion(name);
-          if(motion == null){
+          if (motion == null) {
             System.out.println("No Motions");
           }
           if (!model
@@ -97,8 +97,8 @@ public class OurModel implements IModel {
      * Small helper to turn a shape string description to the appropriate enum.
      *
      * @param type - a string describing a certain shape.
-     * @return - the enum that represents the same shape as the given shape. null
-     * if the shape is not supported.
+     * @return - the enum that represents the same shape as the given shape. null if the shape is
+     *     not supported.
      */
     private ShapeType shapeStringToType(String type) {
       switch (type) {
@@ -219,28 +219,28 @@ public class OurModel implements IModel {
 
   @Override
   public void setCanvasWidth(int width) {
-    if(width > 0){
+    if (width > 0) {
       this.canvasWidth = width;
     }
   }
 
   @Override
   public void setCanvasHeight(int height) {
-    if(height > 0){
+    if (height > 0) {
       this.canvasHeight = height;
     }
   }
 
   @Override
   public void setBoundingX(int x) {
-    if(x >= 0){
+    if (x >= 0) {
       this.boundingX = x;
     }
   }
 
   @Override
   public void setBoundingY(int y) {
-    if(y >= 0){
+    if (y >= 0) {
       this.boundingY = y;
     }
   }
@@ -277,7 +277,7 @@ public class OurModel implements IModel {
             .getStartTick()) {
           // ensure if the endTick is the same as this startTick the parameters are the same
           IMotion otherMotion = this.motionsMap.get(name).get(index - 1);
-          if(this.endStartLineUp(otherMotion, motion)){
+          if (this.endStartLineUp(otherMotion, motion)) {
             return false;
           }
         }
@@ -288,9 +288,10 @@ public class OurModel implements IModel {
 
     if (insert) {
       this.motionsMap.get(name).add(index, motion);
-    } else if(motion.getStartTick() == this.motionsMap.get(name).get(this.motionsMap.get(name).size()-1).getEndTick()){
-      IMotion otherMotion = this.motionsMap.get(name).get(this.motionsMap.get(name).size()-1);
-      if(this.endStartLineUp(otherMotion, motion)) {
+    } else if (motion.getStartTick() == this.motionsMap.get(name)
+        .get(this.motionsMap.get(name).size() - 1).getEndTick()) {
+      IMotion otherMotion = this.motionsMap.get(name).get(this.motionsMap.get(name).size() - 1);
+      if (this.endStartLineUp(otherMotion, motion)) {
         this.motionsMap.get(name).add(motion);
         return true;
       }
@@ -300,16 +301,16 @@ public class OurModel implements IModel {
   }
 
   /**
-   * Helper function that ensures that the end tick and parameters of the first motion
-   * are the same as the starting tick and parameters of the second motion.
+   * Helper function that ensures that the end tick and parameters of the first motion are the same
+   * as the starting tick and parameters of the second motion.
    *
    * @param first - the motion which comes directly before the second one.
    * @param second - the motion which comes directly after the first one.
-   * @return - true if the first motion has the same ending tick, position, width, height, and
-   * color as the starting tick, position, width, height, and color as the second one.
-   * false otherwise.
+   * @return - true if the first motion has the same ending tick, position, width, height, and color
+   *     as the starting tick, position, width, height, and color as the second one. false
+   *     otherwise.
    */
-  private boolean endStartLineUp(IMotion first, IMotion second){
+  private boolean endStartLineUp(IMotion first, IMotion second) {
     return first.getEndTick() == second.getStartTick()
         && Math.abs(first.getFinalWidth() - second.getInitialWidth()) < 0.01
         && Math.abs(first.getFinalHeight() - second.getInitialHeight()) < 0.01
@@ -335,8 +336,8 @@ public class OurModel implements IModel {
    *
    * @param shape the shape whose associated motions need to be searched
    * @param tick - the tick to get the motion at.
-   * @return the motion applying to the given shape at the given tick. null
-   * if no such motion exists.
+   * @return the motion applying to the given shape at the given tick. null if no such motion
+   *     exists.
    */
   private IMotion getMotionAtTick(IReadOnlyShape shape, int tick) {
     List<IMotion> motions = this.getShapeMotions(shape.getName());
@@ -355,7 +356,7 @@ public class OurModel implements IModel {
    * @param shape - the shape to calculate the given shape at a given tick at.
    * @param tick - the tick to caculate the given shape at.
    * @return The given shape at the given tick. null if the shape has no associated motions at this
-   * tick.
+   *     tick.
    */
   private IReadOnlyShape getShapeAtTick(IReadOnlyShape shape, int tick) {
     IMotion motion = this.getMotionAtTick(shape, tick);
@@ -388,7 +389,7 @@ public class OurModel implements IModel {
 
 
   /**
-   * tweening function to get the "inbetweens" in the animation
+   * tweening function to get the "inbetweens" in the animation.
    *
    * @param start - the start value.
    * @param end - the end value.
@@ -398,7 +399,7 @@ public class OurModel implements IModel {
    * @return the value at the given tick between the start and end values.
    */
   private double tween(double start, double end, double startTick, double endTick, double tick) {
-    if(Math.abs(start - end) < 0.001){
+    if (Math.abs(start - end) < 0.001) {
       return start;
     }
     double endResult = start * ((endTick - tick) / (endTick - startTick))
@@ -408,7 +409,7 @@ public class OurModel implements IModel {
 
 
   /**
-   * tweening function for colors
+   * tweening function for colors.
    *
    * @param start - the starting color.
    * @param end - the ending color.
@@ -418,7 +419,7 @@ public class OurModel implements IModel {
    * @return - the color at the appropriate sate of transition at the current tick.
    */
   private Color tweenColor(Color start, Color end, int startTick, int endTick, int tick) {
-    if(start.equals(end)){
+    if (start.equals(end)) {
       return start;
     }
     int red = start.getRed();
@@ -441,7 +442,7 @@ public class OurModel implements IModel {
   public List<IMotion> getShapeMotions(String name) {
     List<IMotion> copy = new ArrayList<>();
     List<IMotion> shapeMotions = this.motionsMap.get(name);
-    if(shapeMotions == null){
+    if (shapeMotions == null) {
       return copy;
     }
     for (IMotion motion : shapeMotions) {

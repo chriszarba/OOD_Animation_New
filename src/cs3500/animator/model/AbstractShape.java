@@ -29,7 +29,8 @@ public abstract class AbstractShape implements IShape {
     this.visible = visible;
   }
 
-  protected AbstractShape(String name, Point2D pos, Color color, double width, double height, boolean visible) {
+  protected AbstractShape(String name, Point2D pos, Color color, double width, double height,
+      boolean visible) {
     if (pos == null || pos.getX() < 0 || pos.getY() < 0 || width < 0 || height < 0
         || color == null || name == null) {
       throw new IllegalArgumentException("Invalid argument(s) to create shape.");
@@ -126,5 +127,7 @@ public abstract class AbstractShape implements IShape {
   public abstract ShapeType getShapeType();
 
   @Override
-  public String getName() { return this.name; }
+  public String getName() {
+    return this.name;
+  }
 }

@@ -12,7 +12,11 @@ import cs3500.animator.view.TextView;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.Writer;
 
 /**
  * Class to contain the main method of the program.
@@ -20,15 +24,15 @@ import java.io.OutputStream;
 public class Excellence {
 
   /**
-   * The main method of the program. Uses the command line arguments to
-   * construct a model and view, and plays the animation.
+   * The main method of the program. Uses the command line arguments to construct a model and view,
+   * and plays the animation.
    *
    * @param args - the command line arguments.
    */
-  public static void main(String[] args){
+  public static void main(String[] args) {
     Excellence.ControllerBuilder.parseArgs(args);
     IController controller = Excellence.ControllerBuilder.buildController();
-    if(controller == null){
+    if (controller == null) {
       System.out.println("Invalid Arguments!");
       return;
     }
@@ -36,10 +40,11 @@ public class Excellence {
   }
 
   /**
-   * Static builder class to construct a controller (and the model and view)
-   * based on command line arguments.
+   * Static builder class to construct a controller (and the model and view) based on command line
+   * arguments.
    */
   private static class ControllerBuilder {
+
     private static String viewString;
     private static String inputFile;
     private static String output;
@@ -52,7 +57,7 @@ public class Excellence {
      *
      * @param args - the command line arguments.
      */
-    public static void parseArgs(String[] args){
+    public static void parseArgs(String[] args) {
       // reset variables
       viewString = null;
       inputFile = null;
@@ -61,16 +66,16 @@ public class Excellence {
       model = null;
       ticksPerSecond = 1;
 
-      for(int i = 0; i < args.length; i+=2){
-        if(i + 1 < args.length){
-          if(args[i].equals("-in")){
-            inputFile = args[i+1];
-          }else if(args[i].equals("-view")){
-            viewString = args[i+1];
-          }else if(args[i].equals("-out")){
-            output = args[i+1];
-          }else if(args[i].equals("-speed")){
-            ticksPerSecond = Integer.parseInt(args[i+1]);
+      for (int i = 0; i < args.length; i += 2) {
+        if (i + 1 < args.length) {
+          if (args[i].equals("-in")) {
+            inputFile = args[i + 1];
+          } else if (args[i].equals("-view")) {
+            viewString = args[i + 1];
+          } else if (args[i].equals("-out")) {
+            output = args[i + 1];
+          } else if (args[i].equals("-speed")) {
+            ticksPerSecond = Integer.parseInt(args[i + 1]);
           }
         }
       }
@@ -78,14 +83,14 @@ public class Excellence {
     }
 
     /**
-     * Builds a model based on the given input file using {@link AnimationReader}.
-     * Currently the model immplementation used is {@link OurModel}.
+     * Builds a model based on the given input file using {@link AnimationReader}. Currently the
+     * model immplementation used is {@link OurModel}.
      */
     private static void buildModel() {
       OurModel.Builder builder = new OurModel.Builder();
-      try{
-        AnimationReader.parseFile( new FileReader(inputFile), builder);
-      }catch(FileNotFoundException e){
+      try {
+        AnimationReader.parseFile(new FileReader(inputFile), builder);
+      } catch (FileNotFoundException e) {
         return;
       }
       model = builder.build();
@@ -94,11 +99,11 @@ public class Excellence {
     /**
      * Builds the controller based on the given arguments.
      *
-     * @return - A controller containing the correct model and view based on the command
-     * line arguments. null if the required arguments were not provided.
+     * @return - A controller containing the correct model and view based on the command line
+     *     arguments. null if the required arguments were not provided.
      */
     private static IController buildController() {
-      if(inputFile == null || viewString == null){
+      if (inputFile == null || viewString == null) {
         return null;
       }
 
@@ -109,55 +114,59 @@ public class Excellence {
     }
 
     /**
-     * Builds an output stream based on the given out argument, or
-     * System.out by default.
+     * Builds an output stream based on the given out argument, or System.out by default.
      *
-     * @return an output stream corresponding to the given output argument.
-     * null if the output file cannot be created or accessed, or is a incorrect path.
+     * @return an output stream corresponding to the given output argument. null if the output file
+     *     cannot be created or accessed, or is a incorrect path.
      */
     private static OutputStream buildOutputStream() {
-      if(output == null){
+      if (output == null) {
         return System.out;
       }
-      try{
+      try {
         return new FileOutputStream(output);
-      }catch(FileNotFoundException e){
+      } catch (FileNotFoundException e) {
         return null;
       }
     }
 
     /**
-     * Builds an appendable based on the given output argument,
-     * system.out if the argument was not provided.
+     * Builds an appendable based on the given output argument, system.out if the argument was not
+     * provided.
      *
-     * @return an appendable corresponding to the given output argument.
-     * null if the output file cannot be created or accessed, or is an incorrect path.
+     * @return an appendable corresponding to the given output argument. null if the output file
+     *     cannot be created or accessed, or is an incorrect path.
      */
-    private static Appendable buildAppendable() {
-      if(output == null){
-        return System.out;
-      }else{
-
+    private static Writer buildWriter() {
+      if (output == null) {
+        return new PrintWriter(System.out);
+      } else {
+        try {
+          return new FileWriter(output);
+        } catch (IOException e) {
+          return null;
+        }
       }
-      return null;
     }
 
     /**
      * Builds a view based on the given view and speed.
      *
-     * @param viewType - the string representing the type of view in the command line
-     * arguments.
+     * @param viewType - the string representing the type of view in the command line arguments.
      */
-    private static void buildView(String viewType){
-      switch (viewType){
+    private static void buildView(String viewType) {
+      switch (viewType) {
         case "svg":
-            view = new SVGView(buildOutputStream(), ticksPerSecond);
+          view = new SVGView(buildOutputStream(), ticksPerSecond);
           break;
         case "text":
-          view = new TextView(buildAppendable());
+          view = new TextView(buildWriter());
           break;
         case "visual":
           view = new GUIView(ticksPerSecond);
+          break;
+        default:
+          view = null;
           break;
       }
     }

@@ -17,11 +17,12 @@ public class TestRectangle {
 
   IShape rect1 = new Rectangle("rectangle", 0, 0, Color.BLACK, 0, 0, true);
   IShape rect2 = new Rectangle("rectangle2", 1, 1, Color.BLUE, 1, 1, false);
+
   @Test
   /**
    * Test that getName() returns the right name.
    */
-  public void testGetName(){
+  public void testGetName() {
     assertEquals("rectangle", rect1.getName());
     assertEquals("rectangle2", rect2.getName());
   }
@@ -86,7 +87,6 @@ public class TestRectangle {
   public void testNegativeWidth() {
     IShape rect3 = new Rectangle("rectangle", new Point2D.Double(0, 0), Color.BLACK, -1, 0, true);
   }
-
 
 
   @Test(expected = IllegalArgumentException.class)
@@ -175,7 +175,6 @@ public class TestRectangle {
     assertEquals(25, rect1.getX(), 0.1);
     assertEquals(4, rect2.getX(), 0.1);
   }
-
 
 
   @Test
