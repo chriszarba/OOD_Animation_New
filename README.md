@@ -78,3 +78,6 @@ In OurMotion:
     Allow negative positions
 In AbstractShape:
     Allow negative positions
+
+Most of this refactoring was done to support new design constraints that weren't present in the 
+initial assignment, or we simply didn't think of. 

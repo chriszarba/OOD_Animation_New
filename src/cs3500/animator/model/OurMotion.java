@@ -46,7 +46,7 @@ public class OurMotion implements IMotion {
     if (initialWidth < 0 || initialHeight < 0 || finalWidth < 0 || finalHeight < 0) {
       throw new IllegalArgumentException("invalid dimension");
     }
-    if (initialPos == null || finalPos == null){
+    if (initialPos == null || finalPos == null) {
       throw new IllegalArgumentException("null position");
     }
     if (initialColor == null || finalColor == null) {

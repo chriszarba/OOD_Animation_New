@@ -5,6 +5,7 @@ import cs3500.animator.model.IReadOnlyModel;
 import cs3500.animator.model.IReadOnlyShape;
 import cs3500.animator.model.ShapeType;
 import java.io.IOException;
+import java.io.Writer;
 
 
 /**
@@ -18,19 +19,19 @@ import java.io.IOException;
  */
 public class TextView implements IView {
 
-  private final Appendable appendable;
+  private final Writer writer;
 
   /**
    * Constructs a new TextView.
    *
-   * @param ap - the appendable to write the output to.
-   * @throws IllegalArgumentException - if the given appendable is null.
+   * @param writer - the writer to write output to.
+   * @throws IllegalArgumentException - if the given writer is null.
    */
-  public TextView(Appendable ap) throws IllegalArgumentException {
-    if (ap == null) {
+  public TextView(Writer writer) throws IllegalArgumentException {
+    if (writer == null) {
       throw new IllegalArgumentException("null appendable");
     }
-    this.appendable = ap;
+    this.writer = writer;
   }
 
   @Override
@@ -41,7 +42,7 @@ public class TextView implements IView {
     StringBuilder builder = new StringBuilder();
 
     builder.append(String
-        .format("canvas %-3d %-3d %-4d %d\n", model.getBoundingX(), model.getBoundingY(),
+        .format("canvas %-3d %-3d %-4d %d\n\n", model.getBoundingX(), model.getBoundingY(),
             model.getCanvasWidth(), model.getCanvasHeight()));
 
     for (IReadOnlyShape shape : model.getAllShapes()) {
@@ -78,7 +79,8 @@ public class TextView implements IView {
     builder.delete(builder.length() - 3, builder.length());
 
     try {
-      this.appendable.append(builder.toString());
+      this.writer.write(builder.toString());
+      this.writer.flush();
     } catch (IOException e) {
       throw new IllegalStateException("Failed to append to appendable");
     }

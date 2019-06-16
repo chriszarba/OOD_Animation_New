@@ -8,6 +8,8 @@ import cs3500.animator.view.IView;
 import cs3500.animator.view.TextView;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import org.junit.Test;
 
 /**
@@ -24,16 +26,17 @@ public class TextViewTest {
   @Test
   /** Test constructor succeeds with valid appendable */
   public void constructorTest2() {
-    IView view = new TextView(System.out);
+    IView view = new TextView(new PrintWriter(System.out));
     assertNotEquals(null, view);
   }
 
   @Test
   /** Test render works */
   public void renderTest1() {
-    StringBuilder builder = new StringBuilder();
-    IView view = new TextView(builder);
+    StringWriter writer = new StringWriter();
+    IView view = new TextView(writer);
     String expected = "canvas 200 70  360  360\n"
+        + "\n"
         + "shape R rectangle\n"
         + "motion R 1   200 200 50  100 255 0   0      10  200 200 50  100 255 0   0\n"
         + "motion R 10  200 200 50  100 255 0   0      50  300 300 50  100 255 0   0\n"
@@ -52,10 +55,10 @@ public class TextViewTest {
       Readable input = new FileReader("./test/TestInputs/smalldemo.txt");
       IModel model = AnimationReader.parseFile(input, new OurModel.Builder());
       view.render(model);
-      assertEquals(expected, builder.toString());
-    } catch(FileNotFoundException e){
+      assertEquals(expected, writer.toString());
+    } catch (FileNotFoundException e) {
       e.printStackTrace();
-      assert(false);
+      assert (false);
     }
   }
 

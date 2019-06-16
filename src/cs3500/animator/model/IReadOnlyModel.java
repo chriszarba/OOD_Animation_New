@@ -62,6 +62,7 @@ public interface IReadOnlyModel {
 
   /**
    * Get the height of the canvas.
+   *
    * @return - the height of the canvas.
    */
   int getCanvasHeight();
