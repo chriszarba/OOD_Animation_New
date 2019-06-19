@@ -13,7 +13,7 @@ import java.util.Map;
  * An implementation of {@link IModel}. Stores the shapes and motions for the animation, is the
  * model of the model-view-controller design scheme.
  */
-public class OurModel implements IModel {
+public class OurModel implements IExtendedModel {
 
   protected Map<String, IShape> shapesMap;
   //protected Map<String, List<IMotion>> motionsMap;
@@ -31,6 +31,7 @@ public class OurModel implements IModel {
 
     private Map<String, String> shapes;
     private Map<String, List<IMotion>> motionMap;
+    private Map<String, List<IKeyFrame>> kfMap;
     private int canvasWidth;
     private int canvasHeight;
     private int boundingX;
@@ -38,7 +39,7 @@ public class OurModel implements IModel {
 
     @Override
     public IModel build() {
-      IModel model = new OurModel();
+      IExtendedModel model = new OurModel();
       if (this.shapes != null || motionMap != null) {
         // add shapes
         for (String name : this.shapes.keySet()) {
@@ -62,6 +63,13 @@ public class OurModel implements IModel {
                 motion.getInitialHeight(), motion.getFinalWidth(), motion.getFinalHeight(),
                 motion.getInitialColor(), motion.getFinalColor());
           }
+        }
+      }
+
+      // add keyframes
+      for(Map.Entry<String, List<IKeyFrame>> entry : this.kfMap.entrySet()){
+        for(IKeyFrame kf : entry.getValue()){
+          model.addKeyFrame(entry.getKey(), kf.getTick(), kf.getPosition(), kf.getColor(), kf.getWidth(), kf.getHeight());
         }
       }
 
@@ -148,6 +156,13 @@ public class OurModel implements IModel {
     @Override
     public AnimationBuilder<IModel> addKeyframe(String name, int t, int x, int y, int w, int h,
         int r, int g, int b) {
+      if(this.kfMap == null){
+        this.kfMap = new LinkedHashMap<>();
+      }
+      if(!this.kfMap.containsKey(name)){
+        this.kfMap.put(name, new ArrayList<>());
+      }
+      this.kfMap.get(name).add(new OurKeyFrame(t, new Point2D.Double(x, y), new Color(r, g, b), w, h));
       return this;
     }
   }
@@ -207,8 +222,7 @@ public class OurModel implements IModel {
   public boolean addMotion(String name, int t0, int t1, Point2D startPos, Point2D endPos,
       double startWidth, double startHeight, double endWidth, double endHeight, Color startColor,
       Color endColor) {
-    //if (!this.shapesMap.containsKey(name)) {
-    if (!this.keyframeMap.containsKey(name)) {
+    if (!this.shapesMap.containsKey(name)) {
       return false;
     }
 
@@ -224,7 +238,91 @@ public class OurModel implements IModel {
     try{
       IKeyFrame startKeyFrame = new OurKeyFrame(t0, startPos, startColor, startWidth, startHeight);
       IKeyFrame endKeyFrame = new OurKeyFrame(t1, endPos, endColor, endWidth, endHeight);
+      boolean success = this.addToKeyFrameMap(name, startKeyFrame);
+      success = success && this.addToKeyFrameMap(name, endKeyFrame);
+      return success;
+    }catch (IllegalArgumentException e){
+      return false;
     }
+  }
+
+  @Override
+  public boolean addKeyFrame(String name, int tick, Point2D pos, Color color, double width, double height){
+    if(!this.shapesMap.containsKey(name)){
+      return false;
+    }
+    try {
+      IKeyFrame kf = new OurKeyFrame(tick, pos, color, width, height);
+      return this.addToKeyFrameMap(name, kf);
+    }catch (IllegalArgumentException e){
+      return false;
+    }
+  }
+
+  @Override
+  public boolean removeKeyFrame(String name, int tick) {
+    if(!this.shapesMap.containsKey(name)){
+      return false;
+    }
+    for(int i = 0; i < this.keyframeMap.get(name).size(); ++i){
+      if(this.keyframeMap.get(name).get(i).getTick() == tick){
+        this.keyframeMap.get(name).remove(i);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public boolean editKeyFrame(String name, int tick, Point2D pos, Color color, double width,
+      double height) {
+    if(!this.shapesMap.containsKey(name)){
+      return false;
+    }
+    for(int i = 0; i < this.keyframeMap.get(name).size(); ++i){
+      if(this.keyframeMap.get(name).get(i).getTick() == tick) {
+        IKeyFrame kf = this.keyframeMap.get(name).get(i);
+        Point2D oldPos = null;
+        Color oldColor = null;
+        double oldWidth = -1;
+        double oldHeight = -1;
+        try {
+          if (!kf.getPosition().equals(pos)) {
+            oldPos = kf.getPosition();
+            kf.setPos(pos);
+          }
+          if (!kf.getColor().equals(color)) {
+            oldColor = kf.getColor();
+            kf.setColor(color);
+          }
+          if (Math.abs(kf.getWidth() - width) > 0.01) {
+            oldWidth = kf.getWidth();
+            kf.setWidth(width);
+          }
+          if (Math.abs(kf.getHeight() - height) > 0.01) {
+            oldHeight = kf.getHeight();
+            kf.setHeight(height);
+          }
+          return true;
+        } catch (IllegalArgumentException e) {
+          // prevent partial update
+          if(oldPos != null){
+            kf.setPos(pos);
+          }
+          if(oldColor != null){
+            kf.setColor(oldColor);
+          }
+          if(oldWidth > 0){
+            kf.setWidth(oldWidth);
+          }
+          if(oldHeight > 0){
+            kf.setHeight(oldHeight);
+          }
+          return false;
+        }
+      }
+    }
+    return false;
   }
 
   @Override
@@ -255,7 +353,7 @@ public class OurModel implements IModel {
     }
   }
 
-  /**
+  /*
    * Adds the motion to the motion map, ensuring it does not overlap with any of the other motions
    * associated with the same shape. Keeps the lists of motions associated with each shape sorted
    * from lowest to highest by starting tick.
@@ -264,6 +362,7 @@ public class OurModel implements IModel {
    * @param motion - the motion to add to the map.
    * @return true if the motion is successfully added to the map, false otherwise.
    */
+  /*
   protected boolean addToMotionMap(String name, IMotion motion) {
     // if there is no entry for this name, add one
     if (!this.motionsMap.containsKey(name)) {
@@ -309,8 +408,30 @@ public class OurModel implements IModel {
     }
     return true;
   }
+   */
 
-  /**
+  protected boolean addToKeyFrameMap(String name, IKeyFrame kf){
+    if(!this.keyframeMap.containsKey(name)){
+      this.keyframeMap.put(name, new ArrayList<>());
+      this.keyframeMap.get(name).add(kf);
+      return true;
+    }
+
+    // insertion sort
+    int index = 0;
+    for(; index < this.keyframeMap.get(name).size(); ++index){
+      if(this.keyframeMap.get(name).get(index).getTick() == kf.getTick()){
+        return kf.equals(this.keyframeMap.get(name).get(index));
+      }else if(this.keyframeMap.get(name).get(index).getTick() > kf.getTick()){
+        break;
+      }
+    }
+
+    this.keyframeMap.get(name).add(index, kf);
+    return true;
+  }
+
+  /*
    * Helper function that ensures that the end tick and parameters of the first motion are the same
    * as the starting tick and parameters of the second motion.
    *
@@ -320,6 +441,7 @@ public class OurModel implements IModel {
    *     as the starting tick, position, width, height, and color as the second one. false
    *     otherwise.
    */
+  /*
   private boolean endStartLineUp(IMotion first, IMotion second) {
     return first.getEndTick() == second.getStartTick()
         && Math.abs(first.getFinalWidth() - second.getInitialWidth()) < 0.01
@@ -327,6 +449,7 @@ public class OurModel implements IModel {
         && first.getFinalPos().equals(second.getInitialPos())
         && first.getFinalColor().equals(second.getInitialColor());
   }
+   */
 
   @Override
   public List<IReadOnlyShape> animate(int tick) {
@@ -451,13 +574,9 @@ public class OurModel implements IModel {
   @Override
   public List<IMotion> getShapeMotions(String name) {
     List<IMotion> copy = new ArrayList<>();
-    List<IMotion> shapeMotions = this.motionsMap.get(name);
-    if (shapeMotions == null) {
-      return copy;
-    }
-    for (IMotion motion : shapeMotions) {
-      // IMotions are immutable
-      copy.add(motion);
+    List<IKeyFrame> kfList = this.keyframeMap.get(name);
+    for(int i = 0; i < kfList.size() - 1; ++i){
+      copy.add(new OurMotion(kfList.get(i), kfList.get(i+1)));
     }
     return copy;
   }
@@ -490,6 +609,31 @@ public class OurModel implements IModel {
   @Override
   public int getBoundingY() {
     return this.boundingY;
+  }
+
+  @Override
+  public int getMaximumTick() {
+    int maxTick = 0;
+    for(List<IKeyFrame> list : this.keyframeMap.values()){
+      for(IKeyFrame kf : list){
+        if(kf.getTick() > maxTick){
+          maxTick = kf.getTick();
+        }
+      }
+    }
+    return maxTick;
+  }
+
+  @Override
+  public List<IReadOnlyKeyFrame> getShapeKeyFrames(String name) {
+    List<IReadOnlyKeyFrame> copy = new ArrayList<>();
+    if(!this.shapesMap.containsKey(name)){
+      return copy;
+    }
+    for(IKeyFrame kf : this.keyframeMap.get(name)){
+      copy.add(kf);
+    }
+    return copy;
   }
 
 }
