@@ -5,4 +5,5 @@ public interface ControllableView extends IView {
   void toggleRewind();
   void setSpeed(int ticksPerSecond);
   void setCurrentTick(int tick);
+  void toggleLooping();
 }

@@ -20,12 +20,12 @@ import javax.swing.Timer;
  */
 public class GUIView extends JPanel implements ControllableView {
 
-  //private JButton quitbutton;
   private List<IReadOnlyShape> shapes = new ArrayList<IReadOnlyShape>();
   private Timer timer;
   private int ticksPerSecond;
-  private JFrame window = new JFrame("Animator");
+  //private JFrame window = new JFrame("Animator");
   private GUIActionListener actionListener;
+  private boolean looping;
 
   private class GUIActionListener implements ActionListener {
     private int tick;
@@ -47,7 +47,7 @@ public class GUIView extends JPanel implements ControllableView {
     }
 
     public boolean isOver() {
-      return (tick == 0 && direction < 0) || (tick == && direction > 0);
+      return (tick == 0 && direction < 0) || (tick == model.getMaximumTick() && direction > 0);
     }
 
     @Override
@@ -71,20 +71,7 @@ public class GUIView extends JPanel implements ControllableView {
       throw new IllegalArgumentException("ticks per second must be > 0");
     }
     this.ticksPerSecond = ticksPerSecond;
-    window.setVisible(true);
-    window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-    JScrollPane pane = new JScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-        JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-    pane.setVisible(true);
-    /*JScrollBar hbar = new JScrollBar(JScrollBar.HORIZONTAL);
-    JScrollBar vbar = new JScrollBar(JScrollBar.VERTICAL);
-    pane.add(hbar);
-    pane.add(vbar);
-    pane.add(this);
-     */
-
-    window.add(pane);
+    this.looping = false;
   }
 
   @Override
@@ -96,6 +83,12 @@ public class GUIView extends JPanel implements ControllableView {
   public void setCurrentTick(int tick) {
     this.actionListener.setTick(tick);
   }
+
+  @Override
+  public void toggleLooping() {
+    this.looping = !this.looping;
+  }
+
 
   @Override
   public void setSpeed(int ticksPerSecond) {
@@ -118,7 +111,6 @@ public class GUIView extends JPanel implements ControllableView {
     if (model == null) {
       throw new IllegalArgumentException("null model");
     }
-    window.setSize(model.getCanvasWidth(), model.getCanvasHeight());
     this.setBounds(model.getBoundingX(), model.getBoundingY(), model.getCanvasWidth(),
         model.getCanvasHeight());
 
@@ -142,6 +134,9 @@ public class GUIView extends JPanel implements ControllableView {
     }
     this.shapes = model.animate(tick);
     repaint();
+    if(this.looping && (tick == model.getMaximumTick())){
+      this.setCurrentTick(0);
+    }
   }
 
   @Override
