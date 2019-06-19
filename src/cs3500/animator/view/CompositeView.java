@@ -9,6 +9,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 
 import cs3500.animator.model.IReadOnlyModel;
+import cs3500.animator.model.OurModel;
 
 // add a color wheel to edit shape color
 public class CompositeView extends JFrame implements ControllableView {
@@ -17,17 +18,22 @@ public class CompositeView extends JFrame implements ControllableView {
   private JButton rewindButton;
   private JScrollBar tickScroller;
   private JButton setLoop;
-  private IExtendedModel model;
+  private OurModel model;
   private JButton modifyShapes;
   private JButton modifyKeyFrames;
 
-  CompositeView(int ticksPerSecond){
+  public CompositeView(int ticksPerSecond){
     super("Editor View");
+    this.pauseButton = new JButton();
+    this.rewindButton = new JButton();
+    this.tickScroller = new JScrollBar();
+    this.setLoop = new JButton();
+    this.modifyShapes = new JButton();
+    this.modifyKeyFrames = new JButton();
     this.guiView = new GUIView(ticksPerSecond);
     this.setVisible(true);
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-    JScrollPane pane = new JScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+    JScrollPane pane = new JScrollPane(this.guiView, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
         JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
      pane.setVisible(true);
     this.add(pane);

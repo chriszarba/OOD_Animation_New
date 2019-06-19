@@ -73,13 +73,14 @@ public class OurKeyFrame implements IKeyFrame {
         && Math.abs(this.height - ((OurKeyFrame) other).height) < 0.01;
   }
 
-  @Override
+  /*
   public void setTick(int tick) throws IllegalArgumentException {
     if(tick < 0){
       throw new IllegalArgumentException("Invalid Tick");
     }
     this.tick = tick;
   }
+   */
 
   @Override
   public void setHeight(double height) throws IllegalArgumentException {

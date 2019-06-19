@@ -20,10 +20,10 @@ import javax.swing.Timer;
  */
 public class GUIView extends JPanel implements ControllableView {
 
+  // make self sufficient again
   private List<IReadOnlyShape> shapes = new ArrayList<IReadOnlyShape>();
   private Timer timer;
   private int ticksPerSecond;
-  //private JFrame window = new JFrame("Animator");
   private GUIActionListener actionListener;
   private boolean looping;
 
