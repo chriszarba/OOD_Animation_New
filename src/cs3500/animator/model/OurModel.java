@@ -16,7 +16,8 @@ import java.util.Map;
 public class OurModel implements IModel {
 
   protected Map<String, IShape> shapesMap;
-  protected Map<String, List<IMotion>> motionsMap;
+  //protected Map<String, List<IMotion>> motionsMap;
+  protected Map<String, List<IKeyFrame>> keyframeMap;
   protected int canvasWidth;
   protected int canvasHeight;
   protected int boundingX;
@@ -156,7 +157,8 @@ public class OurModel implements IModel {
    */
   public OurModel() {
     shapesMap = new LinkedHashMap<>();
-    motionsMap = new LinkedHashMap<>();
+    //motionsMap = new LinkedHashMap<>();
+    keyframeMap = new LinkedHashMap<>();
     this.canvasWidth = 1000;
     this.canvasHeight = 1000;
     this.boundingX = Integer.MAX_VALUE;
@@ -194,7 +196,8 @@ public class OurModel implements IModel {
   public boolean removeShape(String name) {
     if (shapesMap.containsKey(name)) {
       shapesMap.remove(name);
-      motionsMap.remove(name);
+      //motionsMap.remove(name);
+      keyframeMap.remove(name);
       return true;
     }
     return false;
@@ -204,16 +207,23 @@ public class OurModel implements IModel {
   public boolean addMotion(String name, int t0, int t1, Point2D startPos, Point2D endPos,
       double startWidth, double startHeight, double endWidth, double endHeight, Color startColor,
       Color endColor) {
-    if (!this.shapesMap.containsKey(name)) {
+    //if (!this.shapesMap.containsKey(name)) {
+    if (!this.keyframeMap.containsKey(name)) {
       return false;
     }
 
+    /*
     try {
       IMotion motion = new OurMotion(t0, t1, startPos, endPos, startWidth, startHeight, endWidth,
           endHeight, startColor, endColor);
       return this.addToMotionMap(name, motion);
     } catch (IllegalArgumentException e) {
       return false;
+    }
+     */
+    try{
+      IKeyFrame startKeyFrame = new OurKeyFrame(t0, startPos, startColor, startWidth, startHeight);
+      IKeyFrame endKeyFrame = new OurKeyFrame(t1, endPos, endColor, endWidth, endHeight);
     }
   }
 
