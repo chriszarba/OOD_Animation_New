@@ -70,6 +70,23 @@ public class OurMotion implements IMotion {
         finalColor.getAlpha());
   }
 
+  public OurMotion(IKeyFrame start, IKeyFrame end) throws IllegalArgumentException{
+    if(start == null || end == null){
+      throw new IllegalArgumentException("null parameter");
+    }
+    this.startTick = start.getTick();
+    this.initialPos = start.getPosition();
+    this.initialColor = start.getColor();
+    this.initialWidth = start.getWidth();
+    this.initialHeight = start.getHeight();
+
+    this.endTick = end.getTick();
+    this.finalPos = end.getPosition();
+    this.finalColor = end.getColor();
+    this.finalWidth = end.getWidth();
+    this.finalHeight = end.getHeight();
+  }
+
 
   @Override
   public int getStartTick() {
