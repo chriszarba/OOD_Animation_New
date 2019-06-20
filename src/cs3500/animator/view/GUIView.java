@@ -18,7 +18,7 @@ import javax.swing.Timer;
  * An implementation of {@link IView} that displays the animation
  * using java swing.
  */
-public class GUIView extends JPanel implements ControllableView {
+public class GUIView extends JPanel implements IExtendedGUIView {
 
   private List<IReadOnlyShape> shapes = new ArrayList<IReadOnlyShape>();
   private Timer timer;
@@ -51,6 +51,7 @@ public class GUIView extends JPanel implements ControllableView {
 
     public void setTick(int tick) {
       this.tick = tick;
+      renderByTick(this.tick, model);
     }
 
     public void toggleDirection(){
@@ -104,9 +105,6 @@ public class GUIView extends JPanel implements ControllableView {
   public void setWindowBounds(int x, int y, int width, int height){
     this.window.setBounds(x, y, width, height);
   }
-
-  @Override
-  public void addActionListener(ActionListener actionListener){}
 
   @Override
   public void toggleRewind(){
