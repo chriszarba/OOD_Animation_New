@@ -5,10 +5,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 
 import cs3500.animator.model.IReadOnlyModel;
 import cs3500.animator.model.OurModel;
@@ -20,7 +17,6 @@ public class CompositeView extends JFrame implements ControllableView {
   private JButton rewindButton;
   private JScrollBar tickScroller;
   private JButton setLoop;
-  private OurModel model;
   private JButton modifyShapes;
   private JButton modifyKeyFrames;
   private List<ActionListener> actionListeners;
@@ -39,6 +35,11 @@ public class CompositeView extends JFrame implements ControllableView {
     JScrollPane pane = new JScrollPane(this.guiView, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
         JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
      pane.setVisible(true);
+    JPanel panel = new JPanel();
+    panel.add(this.pauseButton);
+    panel.add(this.rewindButton);
+    panel.add(this.setLoop);
+    this.add(panel, TOP_ALIGNMENT);
     this.add(pane);
     this.pauseButton.addActionListener(new ActionListener() {
       @Override
@@ -59,6 +60,7 @@ public class CompositeView extends JFrame implements ControllableView {
       }
     });
     this.actionListeners = new ArrayList<ActionListener>();
+
   }
 
   public void addActionListener(ActionListener actionListener){

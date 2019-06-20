@@ -76,12 +76,8 @@ public class GUIView extends JPanel implements ControllableView {
   }
 
   public GUIView(int ticksPerSecond, boolean constructor){
-    if (ticksPerSecond <= 0) {
-      throw new IllegalArgumentException("ticks per second must be > 0");
-    }
+    this(ticksPerSecond);
     if(constructor){
-      this.ticksPerSecond = ticksPerSecond;
-      this.looping = false;
       this.window = new JFrame("Animator");
       this.window.setVisible(true);
       this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -101,6 +97,9 @@ public class GUIView extends JPanel implements ControllableView {
 
   @Override
   public void toggleRewind(){
+    if(!this.timer.isRunning()){
+      timer.start();
+    }
     this.actionListener.toggleDirection();
   }
 
@@ -141,7 +140,7 @@ public class GUIView extends JPanel implements ControllableView {
 
     this.shapes = model.getAllShapes();
     int ms = (int) (((1 / ((double) ticksPerSecond)) * 1000) + 0.5);
-    this.actionListener = new GUIActionListener(0, model);
+    this.actionListener = new GUIActionListener(1, model);
     this.timer = new Timer(ms, this.actionListener);
     this.timer.setRepeats(true);
     this.timer.start();
