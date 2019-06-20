@@ -1,10 +1,11 @@
 package cs3500.animator.controller;
 
+import cs3500.animator.view.ControllableView;
 import java.awt.event.ActionEvent;
 
 public class RewindActionListener extends AbstractActionListener {
 
-  protected RewindActionListener(IControllableView view) throws IllegalArgumentException {
+  public RewindActionListener(ControllableView view) throws IllegalArgumentException {
     super(view);
   }
 

@@ -1,5 +1,6 @@
 package cs3500.animator.view;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 
@@ -27,19 +29,27 @@ public class CompositeView extends JFrame implements ControllableView {
 
   public CompositeView(int ticksPerSecond){
     super("Editor View");
-    this.pauseButton = new JButton();
-    this.rewindButton = new JButton();
+    this.pauseButton = new JButton("Pause");
+    this.pauseButton.setActionCommand("PauseEvent");
+    this.rewindButton = new JButton("Rewind");
+    this.rewindButton.setActionCommand("RewindEvent");
     this.tickScroller = new JScrollBar();
-    this.setLoop = new JButton();
+    this.setLoop = new JButton("Loop");
+    this.setLoop.setActionCommand("LoopEvent");
     this.modifyShapes = new JButton();
     this.modifyKeyFrames = new JButton();
     this.guiView = new GUIView(ticksPerSecond);
-    this.setVisible(true);
+    JPanel panel = new JPanel();
+    panel.add(this.pauseButton);
+    panel.add(this.rewindButton);
+    panel.add(this.setLoop);
+    this.add(panel, BorderLayout.PAGE_START);
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     JScrollPane pane = new JScrollPane(this.guiView, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
         JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
      pane.setVisible(true);
-    this.add(pane);
+    this.add(pane, BorderLayout.CENTER);
+    /*
     this.pauseButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent actionEvent) {
@@ -58,11 +68,17 @@ public class CompositeView extends JFrame implements ControllableView {
         toggleLooping();
       }
     });
-    this.actionListeners = new ArrayList<ActionListener>();
+     */
+    //this.actionListeners = new ArrayList<ActionListener>();
+    this.setVisible(true);
   }
 
+  @Override
   public void addActionListener(ActionListener actionListener){
-    this.actionListeners.add(actionListener);
+    //this.actionListeners.add(actionListener);
+    this.pauseButton.addActionListener(actionListener);
+    this.rewindButton.addActionListener(actionListener);
+    this.setLoop.addActionListener(actionListener);
   }
 
   @Override
