@@ -1,10 +1,16 @@
 package cs3500.animator;
 
 import cs3500.animator.controller.IController;
+import cs3500.animator.controller.LoopActionListener;
 import cs3500.animator.controller.OurController;
+import cs3500.animator.controller.PauseActionListener;
+import cs3500.animator.controller.RewindActionListener;
 import cs3500.animator.model.IModel;
 import cs3500.animator.model.IReadOnlyModel;
 import cs3500.animator.model.OurModel;
+import cs3500.animator.model.OurModel.Builder;
+import cs3500.animator.model.OurMotion;
+import cs3500.animator.util.AnimationBuilder;
 import cs3500.animator.util.AnimationReader;
 import cs3500.animator.view.CompositeView;
 import cs3500.animator.view.ControllableView;
@@ -33,6 +39,20 @@ public class Excellence {
    * @param args - the command line arguments.
    */
   public static void main(String[] args) {
+    OurModel.Builder builder = new Builder();
+    try{
+      AnimationReader.parseFile(new FileReader("/home/neil/school/ood/Animation/test/TestInputs/smalldemo.txt"), builder);
+    }catch(FileNotFoundException e){
+      e.printStackTrace();
+      return;
+    }
+    ControllableView view = new CompositeView(10);
+    IModel model = builder.build();
+    view.addActionListener(new RewindActionListener(view));
+    view.addActionListener(new PauseActionListener(view));
+    view.addActionListener(new LoopActionListener(view));
+    view.render(model);
+    /*
     Excellence.ControllerBuilder.parseArgs(args);
     IController controller = Excellence.ControllerBuilder.buildController();
     if (controller == null) {
@@ -40,6 +60,7 @@ public class Excellence {
       return;
     }
     controller.run();
+     */
   }
 
   /**
