@@ -23,9 +23,10 @@ public class GUIView extends JPanel implements ControllableView {
   private List<IReadOnlyShape> shapes = new ArrayList<IReadOnlyShape>();
   private Timer timer;
   private int ticksPerSecond;
-  //private JFrame window = new JFrame("Animator");
   private GUIActionListener actionListener;
   private boolean looping;
+  private JFrame window;
+
 
   private class GUIActionListener implements ActionListener {
     private int tick;
@@ -72,6 +73,30 @@ public class GUIView extends JPanel implements ControllableView {
     }
     this.ticksPerSecond = ticksPerSecond;
     this.looping = false;
+  }
+
+  public GUIView(int ticksPerSecond, boolean constructor){
+    if (ticksPerSecond <= 0) {
+      throw new IllegalArgumentException("ticks per second must be > 0");
+    }
+    if(constructor){
+      this.ticksPerSecond = ticksPerSecond;
+      this.looping = false;
+      this.window = new JFrame("Animator");
+      this.window.setVisible(true);
+      this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      JScrollPane pane = new JScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+      pane.setVisible(true);
+      this.window.add(pane);
+    }
+  }
+
+  public void setWindowSize(int width, int height){
+    this.window.setSize(width, height);
+  }
+
+  public void setWindowBounds(int x, int y, int width, int height){
+    this.window.setBounds(x, y, width, height);
   }
 
   @Override

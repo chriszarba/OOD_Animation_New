@@ -14,6 +14,7 @@ public interface IReadOnlyExtendedModel extends IReadOnlyModel {
    */
   int getMaximumTick();
 
+
   /**
    * Get a list of all the read-only keyframes associated with a shape.
    * @param name - the name of the shape.

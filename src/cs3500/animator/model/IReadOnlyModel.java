@@ -80,4 +80,6 @@ public interface IReadOnlyModel {
    * @return - the bounding topmost Y value.
    */
   int getBoundingY();
+
+  int getMaximumTick();
 }
