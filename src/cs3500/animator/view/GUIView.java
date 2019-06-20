@@ -32,11 +32,21 @@ public class GUIView extends JPanel implements ControllableView {
     private int tick;
     private IReadOnlyModel model;
     private int direction;
+    private final int startTick;
 
     public GUIActionListener(int startTick, IReadOnlyModel model){
       this.tick = startTick;
       this.model = model;
       this.direction = 1;
+      this.startTick = startTick;
+    }
+
+    public void reset() {
+      if(direction > 0){
+        this.tick = startTick;
+      }else{
+        this.tick = model.getMaximumTick();
+      }
     }
 
     public void setTick(int tick) {
@@ -48,15 +58,15 @@ public class GUIView extends JPanel implements ControllableView {
     }
 
     public boolean isOver() {
-      return (tick == 0 && direction < 0) || (tick == model.getMaximumTick() && direction > 0);
+      return (tick == this.startTick && direction < 0) || (tick == model.getMaximumTick() && direction > 0);
     }
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
       renderByTick(tick, model);
       tick += direction;
-      if(tick < 0){
-        tick = 0;
+      if(tick < this.startTick){
+        this.tick = this.startTick;
       }
     }
   }
@@ -96,9 +106,12 @@ public class GUIView extends JPanel implements ControllableView {
   }
 
   @Override
+  public void addActionListener(ActionListener actionListener){}
+
+  @Override
   public void toggleRewind(){
     if(!this.timer.isRunning()){
-      timer.start();
+      this.timer.start();
     }
     this.actionListener.toggleDirection();
   }
@@ -108,8 +121,12 @@ public class GUIView extends JPanel implements ControllableView {
     this.actionListener.setTick(tick);
   }
 
+
   @Override
   public void toggleLooping() {
+    if(!this.timer.isRunning()){
+      this.timer.start();
+    }
     this.looping = !this.looping;
   }
 
@@ -158,8 +175,10 @@ public class GUIView extends JPanel implements ControllableView {
     }
     this.shapes = model.animate(tick);
     repaint();
-    if(this.looping && (tick == model.getMaximumTick())){
-      this.setCurrentTick(0);
+    if(this.looping && this.actionListener.isOver()){
+      //this.setCurrentTick(1);
+      this.actionListener.reset();
+      this.timer.start();
     }
   }
 
@@ -167,7 +186,7 @@ public class GUIView extends JPanel implements ControllableView {
   public void paint(Graphics g) {
     if (this.shapes.isEmpty()) {
       if (this.timer != null) {
-        this.timer.stop();
+        //this.timer.stop();
       }
       return;
     }
