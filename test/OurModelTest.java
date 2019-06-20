@@ -1,8 +1,13 @@
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
+import cs3500.animator.model.IExtendedModel;
+import cs3500.animator.model.IKeyFrame;
 import cs3500.animator.model.IModel;
 import cs3500.animator.model.IMotion;
+import cs3500.animator.model.IReadOnlyKeyFrame;
 import cs3500.animator.model.IReadOnlyShape;
 import cs3500.animator.model.IShape;
 import cs3500.animator.model.OurModel;
@@ -12,7 +17,9 @@ import cs3500.animator.model.ShapeType;
 import cs3500.animator.util.AnimationBuilder;
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import org.junit.Test;
 
@@ -244,8 +251,9 @@ public class OurModelTest {
             10, 15, Color.RED, Color.BLUE));
   }
 
-  @Test
+  //@Test
   /** Test that addMotion() fails if motions overlap. */
+  /*
   public void addMotionTest13() {
     IModel model = new OurModel();
     assertEquals(true, model
@@ -258,6 +266,7 @@ public class OurModelTest {
         .addMotion("test_rec", 5, 15, new Point2D.Double(10, 10), new Point2D.Double(10, 0), 10, 15,
             30, 35, Color.BLUE, Color.GREEN));
   }
+   */
 
   @Test
   /** Test that addMotion() succeeds. */
@@ -469,6 +478,304 @@ public class OurModelTest {
     assertEquals(expectedMotion.getFinalColor(), actualMotion.getFinalColor());
     assertEquals(expectedMotion.getFinalWidth(), actualMotion.getFinalWidth(), 0.01);
     assertEquals(expectedMotion.getFinalHeight(), actualMotion.getFinalHeight(), 0.01);
+  }
+
+  @Test
+  /** Test adding a keyframe to a shape with no keyframes results in the expected keyframe */
+  public void addKeyFrameTest1() {
+      IExtendedModel model = new OurModel();
+      assertEquals(true, model
+          .addShape("test_rec", ShapeType.RECTANGLE, new Point2D.Double(0, 0), 10, 20, Color.RED));
+      assertEquals(true, model.addKeyFrame("test_rec", 10));
+
+      List<IReadOnlyKeyFrame> kfList = model.getShapeKeyFrames("test_rec");
+      assertEquals(1, kfList.size());
+      assertEquals(10, kfList.get(0).getTick());
+      assertTrue( new Point2D.Double(0,0).equals(kfList.get(0).getPosition()));
+      assertTrue(Color.RED.equals(kfList.get(0).getColor()));
+      assertEquals(10, kfList.get(0).getWidth(), 0.01);
+    assertEquals(20, kfList.get(0).getHeight(), 0.01);
+  }
+
+  @Test
+  /** Test editing keyframe works as expected */
+  public void editKeyFrameTest1() {
+    IExtendedModel model = new OurModel();
+    assertTrue( model
+        .addShape("test_rec", ShapeType.RECTANGLE, new Point2D.Double(0, 0), 10, 20, Color.RED));
+    assertTrue( model.addKeyFrame("test_rec", 10));
+    assertTrue(model.editKeyFrame("test_rec", 10, new Point2D.Double(10, 10), Color.BLUE, 20, 40));
+
+    List<IReadOnlyKeyFrame> kfList = model.getShapeKeyFrames("test_rec");
+    assertEquals(1, kfList.size());
+    assertEquals(10, kfList.get(0).getTick());
+    assertTrue( new Point2D.Double(10,10).equals(kfList.get(0).getPosition()));
+    assertTrue(Color.BLUE.equals(kfList.get(0).getColor()));
+    assertEquals(20, kfList.get(0).getWidth(), 0.01);
+    assertEquals(40, kfList.get(0).getHeight(), 0.01);
+  }
+
+  @Test
+  /** Test editing keyframe fails if there is invalid width */
+  public void editKeyFrameTest2() {
+    IExtendedModel model = new OurModel();
+    assertTrue( model
+        .addShape("test_rec", ShapeType.RECTANGLE, new Point2D.Double(0, 0), 10, 20, Color.RED));
+    assertTrue( model.addKeyFrame("test_rec", 10));
+    assertFalse(model.editKeyFrame("test_rec", 10, new Point2D.Double(10, 10), Color.BLUE, -20, 40));
+
+    List<IReadOnlyKeyFrame> kfList = model.getShapeKeyFrames("test_rec");
+    assertEquals(1, kfList.size());
+    assertEquals(10, kfList.get(0).getTick());
+    assertEquals( new Point2D.Double(0,0), kfList.get(0).getPosition());
+    assertTrue(Color.RED.equals(kfList.get(0).getColor()));
+    assertEquals(10, kfList.get(0).getWidth(), 0.01);
+    assertEquals(20, kfList.get(0).getHeight(), 0.01);
+  }
+
+  @Test
+  /** Test editing keyframe fails if there is invalid height */
+  public void editKeyFrameTest3() {
+    IExtendedModel model = new OurModel();
+    assertTrue( model
+        .addShape("test_rec", ShapeType.RECTANGLE, new Point2D.Double(0, 0), 10, 20, Color.RED));
+    assertTrue( model.addKeyFrame("test_rec", 10));
+    assertFalse(model.editKeyFrame("test_rec", 10, new Point2D.Double(10, 10), Color.BLUE, 20, -40));
+
+    List<IReadOnlyKeyFrame> kfList = model.getShapeKeyFrames("test_rec");
+    assertEquals(1, kfList.size());
+    assertEquals(10, kfList.get(0).getTick());
+    assertEquals( new Point2D.Double(0,0), kfList.get(0).getPosition());
+    assertTrue(Color.RED.equals(kfList.get(0).getColor()));
+    assertEquals(10, kfList.get(0).getWidth(), 0.01);
+    assertEquals(20, kfList.get(0).getHeight(), 0.01);
+  }
+
+  @Test
+  /** Test editing keyframe fails if it is invalid id */
+  public void editKeyFrameTest4() {
+    IExtendedModel model = new OurModel();
+    assertTrue(model
+        .addShape("test_rec", ShapeType.RECTANGLE, new Point2D.Double(0, 0), 10, 20, Color.RED));
+    assertTrue(model.addKeyFrame("test_rec", 10));
+    assertFalse(
+        model.editKeyFrame("test_ellipse", 10, new Point2D.Double(10, 10), Color.BLUE, 20, 40));
+
+    List<IReadOnlyKeyFrame> kfList = model.getShapeKeyFrames("test_rec");
+    assertEquals(1, kfList.size());
+    assertEquals(10, kfList.get(0).getTick());
+    assertEquals(new Point2D.Double(0, 0), kfList.get(0).getPosition());
+    assertTrue(Color.RED.equals(kfList.get(0).getColor()));
+    assertEquals(10, kfList.get(0).getWidth(), 0.01);
+    assertEquals(20, kfList.get(0).getHeight(), 0.01);
+    assertEquals(0, model.getShapeKeyFrames("test_ellipse").size());
+  }
+
+    @Test
+    /** Test editing keyframe fails if it is null pos */
+    public void editKeyFrameTest5(){
+      IExtendedModel model = new OurModel();
+      assertTrue( model
+          .addShape("test_rec", ShapeType.RECTANGLE, new Point2D.Double(0, 0), 10, 20, Color.RED));
+      assertTrue( model.addKeyFrame("test_rec", 10));
+      assertFalse(model.editKeyFrame("test_rec", 10, null, Color.RED, 20, 40));
+
+      List<IReadOnlyKeyFrame> kfList = model.getShapeKeyFrames("test_rec");
+      assertEquals(1, kfList.size());
+      assertEquals(10, kfList.get(0).getTick());
+      assertEquals( new Point2D.Double(0,0), kfList.get(0).getPosition());
+      assertTrue(Color.RED.equals(kfList.get(0).getColor()));
+      assertEquals(10, kfList.get(0).getWidth(), 0.01);
+      assertEquals(20, kfList.get(0).getHeight(), 0.01);
+      assertEquals(0, model.getShapeKeyFrames("test_ellipse").size());
+    }
+
+  @Test
+  /** Test editing keyframe fails if it is null color */
+  public void editKeyFrameTest6(){
+    IExtendedModel model = new OurModel();
+    assertTrue( model
+        .addShape("test_rec", ShapeType.RECTANGLE, new Point2D.Double(0, 0), 10, 20, Color.RED));
+    assertTrue( model.addKeyFrame("test_rec", 10));
+    assertFalse(model.editKeyFrame("test_rec", 10, new Point2D.Double(10, 10), null, 20, 40));
+
+    List<IReadOnlyKeyFrame> kfList = model.getShapeKeyFrames("test_rec");
+    assertEquals(1, kfList.size());
+    assertEquals(10, kfList.get(0).getTick());
+    assertEquals( new Point2D.Double(0,0), kfList.get(0).getPosition());
+    assertTrue(Color.RED.equals(kfList.get(0).getColor()));
+    assertEquals(10, kfList.get(0).getWidth(), 0.01);
+    assertEquals(20, kfList.get(0).getHeight(), 0.01);
+    assertEquals(0, model.getShapeKeyFrames("test_ellipse").size());
+  }
+
+  @Test
+  /** Test adding a keyframe to a shape with 1 keyframe results in the expected keyframe */
+  public void addKeyFrameTest2() {
+    IExtendedModel model = new OurModel();
+    assertTrue( model
+        .addShape("test_rec", ShapeType.RECTANGLE, new Point2D.Double(0, 0), 10, 20, Color.RED));
+    assertTrue( model.addKeyFrame("test_rec", 100));
+    assertTrue(model.editKeyFrame("test_rec", 100, new Point2D.Double(50, 50), Color.BLUE, 20, 40));
+    assertTrue( model.addKeyFrame("test_rec", 50));
+
+
+    List<IReadOnlyKeyFrame> kfList = model.getShapeKeyFrames("test_rec");
+    assertEquals(2, kfList.size());
+    // assert edited keyframe is as expected
+    assertEquals(100, kfList.get(1).getTick());
+    assertTrue( new Point2D.Double(50,50).equals(kfList.get(1).getPosition()));
+    assertTrue(Color.BLUE.equals(kfList.get(1).getColor()));
+    assertEquals(20, kfList.get(1).getWidth(), 0.01);
+    assertEquals(40, kfList.get(1).getHeight(), 0.01);
+    // assert second added keyframe tweens between shape start and other keyframe
+    assertEquals(50, kfList.get(0).getTick());
+    assertTrue( new Point2D.Double(25,25).equals(kfList.get(0).getPosition()));
+    assertTrue(new Color(127, 0, 127).equals(kfList.get(0).getColor()));
+    assertEquals(15, kfList.get(0).getWidth(), 0.01);
+    assertEquals(30, kfList.get(0).getHeight(), 0.01);
+  }
+
+  @Test
+  /** Test adding a keyframe to a shape with 1 keyframe results in the expected keyframe */
+  public void addKeyFrameTest3() {
+    IExtendedModel model = new OurModel();
+    assertTrue( model
+        .addShape("test_rec", ShapeType.RECTANGLE, new Point2D.Double(0, 0), 10, 20, Color.RED));
+    assertTrue( model.addKeyFrame("test_rec", 10));
+    assertTrue(model.editKeyFrame("test_rec", 10, new Point2D.Double(50, 50), Color.BLUE, 20, 40));
+    assertTrue( model.addKeyFrame("test_rec", 50));
+
+
+    List<IReadOnlyKeyFrame> kfList = model.getShapeKeyFrames("test_rec");
+    assertEquals(2, kfList.size());
+    // assert edited keyframe is as expected
+    assertEquals(10, kfList.get(0).getTick());
+    assertTrue( new Point2D.Double(50,50).equals(kfList.get(0).getPosition()));
+    assertTrue(Color.BLUE.equals(kfList.get(0).getColor()));
+    assertEquals(20, kfList.get(0).getWidth(), 0.01);
+    assertEquals(40, kfList.get(0).getHeight(), 0.01);
+    // assert second is same as first at different tick
+    assertEquals(50, kfList.get(1).getTick());
+    assertTrue( new Point2D.Double(50,50).equals(kfList.get(1).getPosition()));
+    assertTrue(Color.BLUE.equals(kfList.get(1).getColor()));
+    assertEquals(20, kfList.get(1).getWidth(), 0.01);
+    assertEquals(40, kfList.get(1).getHeight(), 0.01);
+  }
+
+  @Test
+  /** Test adding a keyframe to a shape between 2 other keyframes results in expected keyframe */
+  public void addKeyFrameTest4() {
+    IExtendedModel model = new OurModel();
+    assertTrue( model
+        .addShape("test_rec", ShapeType.RECTANGLE, new Point2D.Double(0, 0), 10, 20, Color.RED));
+    assertTrue( model.addKeyFrame("test_rec", 25));
+    assertTrue(model.editKeyFrame("test_rec", 25, new Point2D.Double(50, 50), Color.BLUE, 20, 40));
+    assertTrue( model.addKeyFrame("test_rec", 75));
+    assertTrue(model.editKeyFrame("test_rec", 75, new Point2D.Double(100, 100), Color.GREEN, 40, 80));
+    assertTrue(model.addKeyFrame("test_rec", 50));
+
+
+    List<IReadOnlyKeyFrame> kfList = model.getShapeKeyFrames("test_rec");
+    assertEquals(3, kfList.size());
+    // assert first edited keyframe is as expected
+    assertEquals(25, kfList.get(0).getTick());
+    assertEquals( new Point2D.Double(50,50), kfList.get(0).getPosition());
+    assertEquals(Color.BLUE, kfList.get(0).getColor());
+    assertEquals(20, kfList.get(0).getWidth(), 0.01);
+    assertEquals(40, kfList.get(0).getHeight(), 0.01);
+    // assert second edited keyframe is as expected
+    assertEquals(75, kfList.get(2).getTick());
+    assertEquals( new Point2D.Double(100,100), kfList.get(2).getPosition());
+    assertEquals(Color.GREEN, kfList.get(2).getColor());
+    assertEquals(40, kfList.get(2).getWidth(), 0.01);
+    assertEquals(80, kfList.get(2).getHeight(), 0.01);
+    // assert added keyframe is as expected
+    assertEquals(50, kfList.get(1).getTick());
+    assertEquals( new Point2D.Double(75,75), kfList.get(1).getPosition());
+    assertEquals(new Color(0, 127, 127), kfList.get(1).getColor());
+    assertEquals(30, kfList.get(1).getWidth(), 0.01);
+    assertEquals(60, kfList.get(1).getHeight(), 0.01);
+  }
+
+  @Test
+  /** Test that adding keyframe fails if the shape doesn't exist */
+  public void addKeyFrameTest5() {
+    IExtendedModel model = new OurModel();
+    assertFalse(model.addKeyFrame("test_rec", 10));
+  }
+
+  @Test
+  /** Test that adding keyframe fails if the tick is invalid */
+  public void addKeyFrameTest6() {
+    IExtendedModel model = new OurModel();
+    assertTrue( model
+        .addShape("test_rec", ShapeType.RECTANGLE, new Point2D.Double(0, 0), 10, 20, Color.RED));
+    assertFalse(model.addKeyFrame("test_rec", -10));
+  }
+
+  @Test
+  /** Make sure keyframes are sorted by tick in getShapeKeyFrames() */
+  public void getShapeKeyFramesTest1() {
+    IExtendedModel model = new OurModel();
+    assertTrue( model
+        .addShape("test_rec", ShapeType.RECTANGLE, new Point2D.Double(0, 0), 10, 20, Color.RED));
+    assertTrue(model.addKeyFrame("test_rec", 10));
+    assertTrue(model.addKeyFrame("test_rec", 20));
+    assertTrue(model.addKeyFrame("test_rec", 30));
+
+    List<IReadOnlyKeyFrame> kfList = model.getShapeKeyFrames("test_rec");
+    int prevTick = -1;
+    for(IReadOnlyKeyFrame kf : kfList){
+      assertTrue(prevTick < kf.getTick());
+      prevTick = kf.getTick();
+    }
+  }
+
+  @Test
+  /** Make sure that it returns an empty list for a non-existent shape */
+  public void getShapeKeyFramesTest2() {
+    IExtendedModel model = new OurModel();
+    assertTrue( model
+        .addShape("test_rec", ShapeType.RECTANGLE, new Point2D.Double(0, 0), 10, 20, Color.RED));
+    assertTrue(model.addKeyFrame("test_rec", 10));
+    assertTrue(model.addKeyFrame("test_rec", 20));
+    assertTrue(model.addKeyFrame("test_rec", 30));
+
+    List<IReadOnlyKeyFrame> kfList = model.getShapeKeyFrames("test_ellipse");
+    assertEquals(0, kfList.size());
+  }
+
+  @Test
+  /** Test that if there are no keyframes it results in 0 for the maxTick */
+  public void getMaximumTickTest1() {
+    IExtendedModel model = new OurModel();
+    assertEquals(0, model.getMaximumTick());
+  }
+
+  @Test
+  /** Test that getMaximumTick() returns the highest tick (with one shape) */
+  public void getMaximumTickTest2() {
+    IExtendedModel model = new OurModel();
+    assertEquals(true, model
+        .addShape("test_rec", ShapeType.RECTANGLE, new Point2D.Double(0, 0), 10, 20, Color.RED));
+    assertEquals(true, model.addKeyFrame("test_rec", 10));
+    assertEquals(true, model.addKeyFrame("test_rec", 20));
+    assertEquals(20, model.getMaximumTick());
+  }
+
+  @Test
+  /** Test that getMaximumTick() returns the highest tick (with multiple shapes) */
+  public void getMaximumTickTest3() {
+    IExtendedModel model = new OurModel();
+    assertEquals(true, model
+        .addShape("test_rec", ShapeType.RECTANGLE, new Point2D.Double(0, 0), 10, 20, Color.RED));
+    assertEquals(true, model.addShape("test_ellipse", ShapeType.ELLIPSE, new Point2D.Double(10, 10), 20, 10, Color.BLUE));
+    assertEquals(true, model.addKeyFrame("test_rec", 10));
+    assertEquals(true, model.addKeyFrame("test_rec", 20));
+    assertEquals(true, model.addKeyFrame("test_ellipse", 15));
+    assertEquals(true, model.addKeyFrame("test_ellipse", 50));
+    assertEquals(50, model.getMaximumTick());
   }
 
 }

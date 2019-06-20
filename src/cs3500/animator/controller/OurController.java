@@ -8,8 +8,8 @@ import cs3500.animator.view.IView;
  */
 public class OurController implements IController {
 
-  private final IView view;
-  private final IModel model;
+  protected final IView view;
+  protected final IModel model;
 
   /**
    * Constructs a controller for the given view and model.
