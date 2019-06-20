@@ -74,6 +74,7 @@ public class OurKeyFrame implements IKeyFrame {
   }
 
   /*
+  @Override
   public void setTick(int tick) throws IllegalArgumentException {
     if(tick < 0){
       throw new IllegalArgumentException("Invalid Tick");
@@ -100,7 +101,7 @@ public class OurKeyFrame implements IKeyFrame {
   }
 
   @Override
-  public void setPos(Point2D pos) throws IllegalArgumentException {
+  public void setPosition(Point2D pos) throws IllegalArgumentException {
     if(pos == null){
       throw new IllegalArgumentException("null position");
     }

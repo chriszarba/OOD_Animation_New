@@ -81,3 +81,25 @@ In AbstractShape:
 
 Most of this refactoring was done to support new design constraints that weren't present in the 
 initial assignment, or we simply didn't think of. 
+
+## Version 0.3
+Refactoring:
+Added IExtendedModel and IReadOnlyExtendedModel interfaces
+Added IKeyFrame and IReadOnlyKeyFrame interfaces
+
+Added OurKeyframe which implements IKeyFrame
+
+In OurModel:
+    now internally stores motions as keyframes
+    implemented IExtendedModel:
+        boolean addKeyFrame
+        boolean removeKeyFrame
+        boolean editKeyFrame
+        int getMaximumTick
+    in builder:
+        updated addKeyFrame to properly work
+        refactored building model to support adding keyframes and motions
+        added function getStartKeyFrame() to get the first keyframe for a shape (its initial position)
+
+In OurMotion:
+    Added convienence constructor to construct from two IKeyFrames

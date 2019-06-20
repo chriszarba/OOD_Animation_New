@@ -40,21 +40,23 @@ public class OurModel implements IExtendedModel {
     @Override
     public IModel build() {
       IExtendedModel model = new OurModel();
-      if (this.shapes != null || motionMap != null) {
+      if (this.shapes != null) {
         // add shapes
         for (String name : this.shapes.keySet()) {
-          IMotion motion = this.getStartMotion(name);
-          if (motion == null) {
-            System.out.println("No Motions");
+          IKeyFrame kf = this.getStartKeyFrame(name);
+          if (kf == null) {
+            System.out.println("No KeyFrame");
           }
           if (!model
-              .addShape(name, this.shapeStringToType(this.shapes.get(name)), motion.getInitialPos(),
-                  motion.getInitialWidth(), motion.getInitialHeight(), motion.getInitialColor())) {
+              .addShape(name, this.shapeStringToType(this.shapes.get(name)), kf.getPosition(),
+                  kf.getWidth(), kf.getHeight(), kf.getColor())) {
             //System.out.println("Not Inserted");
             return null;
           }
         }
+      }
 
+      if(this.motionMap != null){
         // add motions
         for (Map.Entry<String, List<IMotion>> entry : this.motionMap.entrySet()) {
           for (IMotion motion : entry.getValue()) {
@@ -66,12 +68,15 @@ public class OurModel implements IExtendedModel {
         }
       }
 
-      // add keyframes
-      for(Map.Entry<String, List<IKeyFrame>> entry : this.kfMap.entrySet()){
-        for(IKeyFrame kf : entry.getValue()){
-          model.addKeyFrame(entry.getKey(), kf.getTick(), kf.getPosition(), kf.getColor(), kf.getWidth(), kf.getHeight());
+      if(this.kfMap != null){
+          for(Map.Entry<String, List<IKeyFrame>> entry : this.kfMap.entrySet()){
+            for(IKeyFrame kf : entry.getValue()){
+              //model.addKeyFrame(entry.getKey(), kf.getTick(), kf.getPosition(), kf.getColor(), kf.getWidth(), kf.getHeight());
+              model.addKeyFrame(entry.getKey(), kf.getTick());
+              model.editKeyFrame(entry.getKey(), kf.getTick(), kf.getPosition(), kf.getColor(), kf.getWidth(), kf.getHeight());
+            }
+          }
         }
-      }
 
       model.setBoundingX(this.boundingX);
       model.setBoundingY(this.boundingY);
@@ -82,24 +87,32 @@ public class OurModel implements IExtendedModel {
     }
 
     /**
-     * Gets the motion with the lowest starting tick associated with a shape.
+     * Gets the keyframe with the lowest starting tick associated with a shape.
      *
      * @param shapeName - the name of the shape.
-     * @return - the motion with the lowest starting tick associated with the given shape.
+     * @return - the keyframe with the lowest starting tick associated with the given shape.
      */
-    private IMotion getStartMotion(String shapeName) {
-      if (this.motionMap.get(shapeName).isEmpty()) {
-        return null;
+    private IKeyFrame getStartKeyFrame(String shapeName) {
+      IKeyFrame out = null;
+      if(this.motionMap != null && !this.motionMap.get(shapeName).isEmpty()){
+        List<IMotion> motionList = this.motionMap.get(shapeName);
+        IMotion min = this.motionMap.get(shapeName).get(0);
+        for (int i = 0; i < motionList.size(); ++i) {
+          if (motionList.get(i).getStartTick() < min.getStartTick()) {
+            min = motionList.get(i);
+          }
+        }
+        out = new OurKeyFrame(min.getStartTick(), min.getInitialPos(), min.getInitialColor(), min.getInitialWidth(), min.getInitialHeight());
       }
-      List<IMotion> motionList = this.motionMap.get(shapeName);
-      IMotion min = this.motionMap.get(shapeName).get(0);
-      for (int i = 0; i < motionList.size(); ++i) {
-        if (motionList.get(i).getStartTick() < min.getStartTick()) {
-          min = motionList.get(i);
+      if(this.kfMap != null && !this.kfMap.get(shapeName).isEmpty()){
+        List<IKeyFrame> kfList = this.kfMap.get(shapeName);
+        for(IKeyFrame kf : kfList){
+          if(kf.getTick() < out.getTick()){
+            out = kf;
+          }
         }
       }
-
-      return min;
+      return out;
     }
 
     /**
@@ -239,6 +252,9 @@ public class OurModel implements IExtendedModel {
       IKeyFrame startKeyFrame = new OurKeyFrame(t0, startPos, startColor, startWidth, startHeight);
       IKeyFrame endKeyFrame = new OurKeyFrame(t1, endPos, endColor, endWidth, endHeight);
       boolean success = this.addToKeyFrameMap(name, startKeyFrame);
+      if(!success){
+        return false;
+      }
       success = success && this.addToKeyFrameMap(name, endKeyFrame);
       return success;
     }catch (IllegalArgumentException e){
@@ -246,6 +262,7 @@ public class OurModel implements IExtendedModel {
     }
   }
 
+  /*
   @Override
   public boolean addKeyFrame(String name, int tick, Point2D pos, Color color, double width, double height){
     if(!this.shapesMap.containsKey(name)){
@@ -258,17 +275,89 @@ public class OurModel implements IExtendedModel {
       return false;
     }
   }
+   */
+
+  @Override
+  public boolean addKeyFrame(String name, int tick){
+    if(!this.shapesMap.containsKey(name) || tick < 0){
+      return false;
+    }
+    // get surrounding key frames
+    IKeyFrame start = null;
+    IKeyFrame end = null;
+    if(this.keyframeMap.get(name) != null) {
+      // list is sorted by tick
+      for (int i = 0; i < this.keyframeMap.get(name).size(); ++i) {
+        IKeyFrame kf = this.keyframeMap.get(name).get(i);
+        if(kf.getTick() == tick){
+          // already exists
+          return true;
+        } else if(kf.getTick() < tick){
+          start = kf;
+        }else if(kf.getTick() > tick){
+          end = kf;
+          break;
+        }
+      }
+    }
+
+    try {
+      if (start == null && end == null) {
+        // no other keyframes - new keyframe same as shape
+        IShape shape = this.shapesMap.get(name);
+        return this.addToKeyFrameMap(name,
+            new OurKeyFrame(tick, new Point2D.Double(shape.getX(), shape.getY()),
+                shape.getColor(), shape.getWidth(), shape.getHeight()));
+      } else if (start == null) {
+        IShape shape = this.shapesMap.get(name);
+        Point2D tweenPos = new Point2D.Double(
+            this.tween(shape.getX(), end.getPosition().getX(), 0, end.getTick(), tick),
+            this.tween(shape.getY(), end.getPosition().getY(), 0, end.getTick(), tick));
+        Color tweenColor = this
+            .tweenColor(shape.getColor(), end.getColor(), 0, end.getTick(), tick);
+        return this.addToKeyFrameMap(name, new OurKeyFrame(tick, tweenPos, tweenColor,
+            this.tween(shape.getWidth(), end.getWidth(), 0, end.getTick(), tick),
+            this.tween(shape.getHeight(), end.getHeight(), 0, end.getTick(), tick)));
+      } else if (end == null) {
+        // copy start at new tick
+        return this.addToKeyFrameMap(name,
+            new OurKeyFrame(tick, start.getPosition(), start.getColor(), start.getWidth(),
+                start.getHeight()));
+      } else {
+        // neither are null
+        Point2D tweenPos = new Point2D.Double(
+            this.tween(start.getPosition().getX(), end.getPosition().getX(), start.getTick(),
+                end.getTick(), tick),
+            this.tween(start.getPosition().getY(), end.getPosition().getY(), start.getTick(),
+                end.getTick(), tick));
+        Color tweenColor = this
+            .tweenColor(start.getColor(), end.getColor(), start.getTick(), end.getTick(), tick);
+        return this.addToKeyFrameMap(name, new OurKeyFrame(tick, tweenPos, tweenColor,
+            this.tween(start.getWidth(), end.getWidth(), start.getTick(), end.getTick(), tick),
+            this.tween(start.getHeight(), end.getHeight(), start.getTick(), end.getTick(), tick)));
+      }
+    }catch (IllegalArgumentException e){
+      return false;
+    }
+  }
 
   @Override
   public boolean removeKeyFrame(String name, int tick) {
     if(!this.shapesMap.containsKey(name)){
       return false;
     }
-    for(int i = 0; i < this.keyframeMap.get(name).size(); ++i){
-      if(this.keyframeMap.get(name).get(i).getTick() == tick){
-        this.keyframeMap.get(name).remove(i);
-        return true;
+
+    int index = 0;
+    boolean found = false;
+    for(; index < this.keyframeMap.get(name).size(); ++index){
+      if(this.keyframeMap.get(name).get(index).getTick() == tick){
+        found = true;
+        break;
       }
+    }
+    if(found){
+      this.keyframeMap.get(name).remove(index);
+      return true;
     }
     return false;
   }
@@ -289,7 +378,7 @@ public class OurModel implements IExtendedModel {
         try {
           if (!kf.getPosition().equals(pos)) {
             oldPos = kf.getPosition();
-            kf.setPos(pos);
+            kf.setPosition(pos);
           }
           if (!kf.getColor().equals(color)) {
             oldColor = kf.getColor();
@@ -307,7 +396,7 @@ public class OurModel implements IExtendedModel {
         } catch (IllegalArgumentException e) {
           // prevent partial update
           if(oldPos != null){
-            kf.setPos(pos);
+            kf.setPosition(oldPos);
           }
           if(oldColor != null){
             kf.setColor(oldColor);
@@ -410,6 +499,13 @@ public class OurModel implements IExtendedModel {
   }
    */
 
+  /**
+   * Adds the given keyframe to the map associated with the shape identified by name. Uses
+   * insertion sort to keep the list sorted from low to high by tick.
+   * @param name - the name of the shape the keyframe is associated with.
+   * @param kf - the keyframe to add to the map.
+   * @return true if the keyframe was successfully added, false otherwise.
+   */
   protected boolean addToKeyFrameMap(String name, IKeyFrame kf){
     if(!this.keyframeMap.containsKey(name)){
       this.keyframeMap.put(name, new ArrayList<>());
@@ -549,7 +645,7 @@ public class OurModel implements IExtendedModel {
    * @param startTick - the start tick.
    * @param endTick - the end tick.
    * @param tick - the current tick.
-   * @return - the color at the appropriate sate of transition at the current tick.
+   * @return - the color at the appropriate state of transition at the current tick.
    */
   private Color tweenColor(Color start, Color end, int startTick, int endTick, int tick) {
     if (start.equals(end)) {
@@ -574,6 +670,9 @@ public class OurModel implements IExtendedModel {
   @Override
   public List<IMotion> getShapeMotions(String name) {
     List<IMotion> copy = new ArrayList<>();
+    if(!this.shapesMap.containsKey(name)){
+      return copy;
+    }
     List<IKeyFrame> kfList = this.keyframeMap.get(name);
     for(int i = 0; i < kfList.size() - 1; ++i){
       copy.add(new OurMotion(kfList.get(i), kfList.get(i+1)));
