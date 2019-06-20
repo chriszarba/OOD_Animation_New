@@ -2,6 +2,8 @@ package cs3500.animator.view;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -21,6 +23,7 @@ public class CompositeView extends JFrame implements ControllableView {
   private OurModel model;
   private JButton modifyShapes;
   private JButton modifyKeyFrames;
+  private List<ActionListener> actionListeners;
 
   public CompositeView(int ticksPerSecond){
     super("Editor View");
@@ -55,9 +58,12 @@ public class CompositeView extends JFrame implements ControllableView {
         toggleLooping();
       }
     });
-
+    this.actionListeners = new ArrayList<ActionListener>();
   }
 
+  public void addActionListener(ActionListener actionListener){
+    this.actionListeners.add(actionListener);
+  }
 
   @Override
   public void togglePause() {
