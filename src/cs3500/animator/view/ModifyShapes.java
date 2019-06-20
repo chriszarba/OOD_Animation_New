@@ -11,6 +11,7 @@ public class ModifyShapes extends JFrame {
     if(addShape){
       // bring up window with components for adding a shape
       // have selection boxes and stuff for creating the shape's information
+
     }
     else {
       // bring up window with components for editing existing shape
