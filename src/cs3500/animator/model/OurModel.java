@@ -415,6 +415,21 @@ public class OurModel implements IExtendedModel {
   }
 
   @Override
+  public boolean editShape(String name, Point2D pos, Color color, double width,
+               double height) {
+    if(!this.shapesMap.containsKey(name)){
+      return false;
+    }
+    IShape shape = this.shapesMap.get(name);
+    shape.setColor(color);
+    shape.setHeight(height);
+    shape.setWidth(width);
+    shape.setX(pos.getX());
+    shape.setY(pos.getY());
+    return true;
+  }
+
+  @Override
   public void setCanvasWidth(int width) {
     if (width > 0) {
       this.canvasWidth = width;
@@ -690,6 +705,7 @@ public class OurModel implements IExtendedModel {
     return copy;
   }
 
+
   @Override
   public int getCanvasWidth() {
     return this.canvasWidth;
@@ -734,5 +750,7 @@ public class OurModel implements IExtendedModel {
     }
     return copy;
   }
+
+
 
 }

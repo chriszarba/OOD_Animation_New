@@ -80,4 +80,16 @@ public interface IModel extends IReadOnlyModel {
    * @param y - the rightmost y value.
    */
   void setBoundingY(int y);
+
+  /**
+   * Edits a shape to the specified values.
+   * @param name The name of the shape.
+   * @param pos the new position of the shape.
+   * @param color the new color of the shape.
+   * @param width the new width of the shape.
+   * @param height the new height of the shape.
+   * @return true if the shape is successfully edited, false if the shape doesn't already exist.
+   */
+  boolean editShape(String name, Point2D pos, Color color, double width,
+                           double height);
 }
